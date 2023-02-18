@@ -1,16 +1,17 @@
 import React from 'react';
-import { Button } from 'antd';
-
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { EmptyLayout } from './Layouts';
+import { configRoutes } from '~/configs';
+import { Auth } from './features';
 const App = () => {
     return (
-        <div className="App">
-            <header className="App-header">
-                <p>
-                    Edit <code>src/App.tsx</code> and save to reload.
-                </p>
-                <Button color="primary">Auth</Button>
-            </header>
-        </div>
+        <Router>
+            <Routes>
+                <Route element={<EmptyLayout />}>
+                    <Route path={`${configRoutes.auth}`} element={<Auth />} />
+                </Route>
+            </Routes>
+        </Router>
     );
 };
 
