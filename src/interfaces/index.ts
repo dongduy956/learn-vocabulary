@@ -1,4 +1,11 @@
 export type { default as StoreState } from './StoreState';
 export type { default as PropWithChildren } from './PropWithChildren';
 export type { default as PropsHead } from './PropsHead';
+export type { default as PropsEditTable } from './PropsEditTable';
+export type { default as PropsWord } from './PropsWord';
+export type { default as PropsPagination } from './PropsPagination';
+export type { default as PropsHandleWord } from './PropsHandleWord';
+export type { default as PropsHandleImportExcel } from './PropsHandleImportExcel';
+export type { default as PropsImportExcel } from './PropsImportExcel';
+export type { default as ParamsSettable } from './ParamsSetTable';
 export * as PropsRequest from './PropsRequest';
