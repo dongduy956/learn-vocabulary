@@ -1,5 +1,9 @@
-export default interface PropsWord {
-    no?: number;
-    id: number;
-    name: string;
+import PropsBaseEntity from './PropsBaseEntity';
+
+export default interface PropsWord extends PropsBaseEntity {
+    en: string;
+    vi: string;
+    topicId: number;
+    topicName?: string;
+    type: string;
 }

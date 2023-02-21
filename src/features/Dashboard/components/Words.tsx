@@ -5,25 +5,27 @@ import {
     Form,
     Input,
     InputNumber,
-    notification,
     Pagination,
     Popconfirm,
     Row,
+    Select,
     Table,
     TableProps,
     Tooltip,
     Typography,
-    Select,
 } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { FC, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Head from '~/components/Head';
+import ImportExcel from '~/components/ImportExcel';
 import { configRoutes, configTitle } from '~/configs';
-import { ParamsSettable, PropsEditTable, PropsPagination, PropsWord } from '~/interfaces';
 import { pageSizeOptions, typeImportExcel } from '~/constraints';
 import { arrayLibrary } from '~/helpers';
-import ImportExcel from '~/components/ImportExcel';
+import { ParamsSettable, PropsEditTable, PropsPagination, PropsTopic, PropsWord } from '~/interfaces';
+import { topicServices, wordServices } from '~/services';
+import FormImportTopic from './FormImportTopic';
+import FormImportWord from './FormImportWord';
 const EditableCell: FC<PropsEditTable<PropsWord>> = ({
     editing,
     dataIndex,
@@ -67,75 +69,17 @@ const Words = () => {
     const history = useNavigate();
     const { search } = useLocation();
     const [form] = Form.useForm();
+    const [formTopic] = Form.useForm();
     const [editingKey, setEditingKey] = useState<number>(0);
     const [openImport, setOpenImport] = useState<boolean>(false);
-    const [data, setData] = useState<Array<PropsWord>>([
-        {
-            id: 1,
-            name: 'Duy',
-        },
-        {
-            id: 2,
-            name: 'Đông',
-        },
-        {
-            id: 3,
-            name: 'Dương',
-        },
-        {
-            id: 1,
-            name: 'Duy',
-        },
-        {
-            id: 2,
-            name: 'Đông',
-        },
-        {
-            id: 3,
-            name: 'Dương',
-        },
-        {
-            id: 1,
-            name: 'Duy',
-        },
-        {
-            id: 2,
-            name: 'Đông',
-        },
-        {
-            id: 3,
-            name: 'Dương',
-        },
-        {
-            id: 1,
-            name: 'Duy',
-        },
-        {
-            id: 2,
-            name: 'Đông',
-        },
-        {
-            id: 3,
-            name: 'Dương',
-        },
-        {
-            id: 1,
-            name: 'Duy',
-        },
-        {
-            id: 2,
-            name: 'Đông',
-        },
-        {
-            id: 3,
-            name: 'Dương',
-        },
-    ]);
+    const [openImportWord, setOpenImportWord] = useState<boolean>(false);
+    const [openImportTopic, setOpenImportTopic] = useState<boolean>(false);
+    const [topics, setTopics] = useState<Array<PropsTopic>>([]);
+    const [data, setData] = useState<Array<PropsWord>>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [typeExcel, setTypeExcel] = useState<string>('');
     const [pagination, setPagination] = useState<PropsPagination>({
-        current: search ? Number(search.split(configRoutes.page)[1]) : 1,
-        total: 15,
-        pageSize: 1,
+        current: search ? Number(search.split(configRoutes.page)[1] ?? '1') : 1,
     });
     const columns = [
         {
@@ -145,7 +89,7 @@ const Words = () => {
                 const editable = isEditing(record);
                 return editable ? (
                     <div className="flex justify-center">
-                        <Typography.Link onClick={() => save(record.id)} className="mr-4">
+                        <Typography.Link onClick={() => save(record.id as number)} className="mr-4">
                             Lưu
                         </Typography.Link>
                         <Typography.Link onClick={cancel}>Huỷ</Typography.Link>
@@ -153,15 +97,18 @@ const Words = () => {
                 ) : (
                     data.length > 0 && (
                         <div className="flex justify-center">
-                            <Tooltip placement="bottom" title={`Xoá ${record.name.toLowerCase()}`} color="cyan">
+                            <Tooltip placement="bottom" title={`Xoá ${record.en.toLowerCase()}`} color="cyan">
                                 <Typography.Link className="mr-2">
-                                    <Popconfirm title="Bạn chắc chắn xoá?" onConfirm={() => handleDelete(record.id)}>
+                                    <Popconfirm
+                                        title="Bạn chắc chắn xoá?"
+                                        onConfirm={() => handleDelete(record.id as number)}
+                                    >
                                         {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                                         <DeleteOutlined />
                                     </Popconfirm>
                                 </Typography.Link>
                             </Tooltip>
-                            <Tooltip placement="bottom" title={`Sửa ${record.name.toLowerCase()}`} color="cyan">
+                            <Tooltip placement="bottom" title={`Sửa ${record.en.toLowerCase()}`} color="cyan">
                                 <Typography.Link disabled={editingKey !== 0} onClick={() => edit(record)}>
                                     <EditOutlined />
                                 </Typography.Link>
@@ -179,14 +126,49 @@ const Words = () => {
             },
         },
         {
-            title: 'Tên loại vaccine',
+            title: 'Tiếng anh',
             editable: true,
-            dataIndex: 'name',
+            dataIndex: 'en',
             sorter: {
-                compare: (a: PropsWord, b: PropsWord) => a.name > b.name,
+                compare: (a: PropsWord, b: PropsWord) => a.en > b.en,
+            },
+        },
+        {
+            title: 'Loại từ',
+            editable: true,
+            dataIndex: 'type',
+            sorter: {
+                compare: (a: PropsWord, b: PropsWord) => a.type > b.type,
+            },
+        },
+        {
+            title: 'Tiếng Việt',
+            editable: true,
+            dataIndex: 'vi',
+            sorter: {
+                compare: (a: PropsWord, b: PropsWord) => a.vi > b.vi,
+            },
+        },
+        {
+            title: 'Chủ đề',
+            editable: true,
+            dataIndex: 'topicName',
+            sorter: {
+                compare: (a: PropsWord, b: PropsWord) => a.topicName && b.topicName && a.topicName > b.topicName,
             },
         },
     ];
+    const handleSetTopics = () => {
+        (async () => {
+            setLoading(true);
+            const resultTopics = (await topicServices.getAllTopics()).data;
+            setLoading(false);
+            setTopics(resultTopics);
+        })();
+    };
+    useEffect(() => {
+        handleSetTopics();
+    }, []);
     useEffect(() => {
         if (!data.every((x) => x.no) || !arrayLibrary.isGrow<Array<PropsWord>>(data))
             setData((pre) => pre.map((x, i) => ({ ...x, no: i + 1 })));
@@ -196,7 +178,7 @@ const Words = () => {
         form.setFieldsValue({
             ...record,
         });
-        setEditingKey(record.id);
+        setEditingKey(record.id as number);
     };
     const cancel = () => {
         setEditingKey(0);
@@ -245,30 +227,38 @@ const Words = () => {
         };
     });
 
-    const fetchData = (params = {}) => {
-        setLoading(true);
+    const fetchData = (params: ParamsSettable = {}) => {
         (async () => {
+            setLoading(true);
             let res;
-            // if (params.searchText)
-            //     res = await typeOfVaccineService.searchTypeOfVaccines(
-            //         params.searchText,
-            //         params.pagination.current,
-            //         params.pagination.pageSize,
-            //     );
-            // else
-            //     res = await typeOfVaccineService.getTypeOfVaccines(
-            //         params.pagination.current,
-            //         params.pagination.pageSize,
-            //     );
-            // setLoading(false);
-            // setData(res.data.map((item) => ({ ...item, key: item.id })));
-            // setPagination({
-            //     ...params.pagination,
-            //     pageSize: params.pagination.pageSize ? params.pagination.pageSize : res.pageSize,
-            //     total: res.totalItems,
-            // });
+            const topicId: number = formTopic.getFieldValue('topicId');
+            if (params.searchText)
+                res = await wordServices.searchWords(
+                    params.searchText as string,
+                    (params.pagination as PropsPagination).current as number,
+                    (params.pagination as PropsPagination).pageSize as number,
+                );
+            else if (topicId !== -1)
+                res = await wordServices.getWordsByTopicId(
+                    topicId,
+                    (params.pagination as PropsPagination).current,
+                    (params.pagination as PropsPagination).pageSize as number,
+                );
+            else
+                res = await wordServices.getAllWordsPaging(
+                    (params.pagination as PropsPagination).current as number,
+                    (params.pagination as PropsPagination).pageSize as number,
+                );
+            setLoading(false);
+            const newData: Array<PropsWord> = res.data;
+            setData(newData.map((item) => ({ ...item, key: item.id })));
+            const newPagination: PropsPagination = {
+                ...params.pagination,
+                pageSize: params.pagination?.pageSize ? params.pagination?.pageSize : res.pageSize,
+                total: res.totalItems,
+            };
+            setPagination(newPagination);
         })();
-        setLoading(false);
     };
     const handleDelete = (id: number) => {
         (async () => {
@@ -329,19 +319,33 @@ const Words = () => {
     return (
         <>
             <Head title={`${configTitle.dashboard}`} />
-            <ImportExcel
+            <FormImportTopic
+                setTopics={handleSetTopics}
+                open={openImportTopic}
+                title="Thêm chủ đề"
+                setOpen={setOpenImportTopic}
+            />
+            <FormImportWord
                 setTable={handleSetData}
-                title={'Nhập excel từ vựng'}
-                type={typeImportExcel.word}
+                open={openImportWord}
+                title="Thêm từ vựng"
+                setOpen={setOpenImportWord}
+            />
+            <ImportExcel
+                setTable={typeExcel === typeImportExcel.word ? handleSetData : handleSetTopics}
+                title={`Nhập excel ${typeExcel === typeImportExcel.word ? 'từ vừng' : 'chủ đề'}`}
+                type={typeExcel}
                 open={openImport}
                 setOpen={setOpenImport}
             />
+
             {/* <ManagerHeader
                 pageName={namePage}
                 setTable={handleSetData}
                 titleImport="Nhập dữ liệu loại khách"
                 typeImport={typeImportExcel.typeOfVaccine}
             /> */}
+
             <div
                 className="site-layout-background sm:p-[24px] pl-[8px] pr-[8px]"
                 style={{
@@ -356,77 +360,99 @@ const Words = () => {
                                 cell: EditableCell,
                             },
                         }}
+                        loading={loading}
                         dataSource={data}
                         pagination={false}
-                        loading={loading}
                         onChange={handleTableChange}
                         scroll={{
                             x: true,
                         }}
                         columns={mergedColumns as ColumnsType<PropsWord>}
                         rowClassName="editable-row"
+                        rowKey={(record) => record.id as number}
                         title={() => (
                             <>
-                                <Row>
-                                    <Col
-                                        md={{ span: 8 }}
-                                        span={24}
-                                        className="md:mb-0 mb-2 flex md:justify-start justify-center "
-                                    >
-                                        <Button type="primary">Thêm chủ đề</Button>
-                                    </Col>
-                                    <Col md={{ span: 16 }} span={24}>
-                                        <Form.Item
-                                            label="Chủ đề"
-                                            name="permissionId"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message: 'Vui lòng chọn chủ đề.',
-                                                },
-                                                {
-                                                    validator: (rule, value, cb) =>
-                                                        value <= -1 ? cb('Vui lòng chọn chủ đề.') : cb(),
-                                                    message: 'Vui lòng chọn chủ đề.',
-                                                },
-                                            ]}
-                                            initialValue={-1}
-                                        >
-                                            <Select>
-                                                <Select.Option value={-1}>Chọn chủ đề</Select.Option>
-                                            </Select>
-                                        </Form.Item>
-                                    </Col>
-                                </Row>
                                 <Row className="justify-between items-center">
-                                    <Col md={{ span: 8 }} span={24} className="md:justify-start flex justify-center">
-                                        Danh sách từ vựng
-                                    </Col>
                                     <Col
-                                        md={{ span: 8 }}
+                                        md={{ span: 12 }}
                                         span={24}
                                         className="flex md:justify-start justify-center md:mt-0 mt-2"
                                     >
-                                        <Button type="primary">Thêm</Button>
+                                        <Button
+                                            onClick={() => {
+                                                setOpenImportTopic(true);
+                                            }}
+                                            type="primary"
+                                        >
+                                            Thêm chủ đề
+                                        </Button>
                                     </Col>
                                     <Col
-                                        md={{ span: 8 }}
+                                        md={{ span: 12 }}
                                         span={24}
                                         className="flex md:justify-end justify-center md:mt-0 mt-2"
                                     >
                                         <Button
                                             onClick={() => {
+                                                setTypeExcel(typeImportExcel.topic);
                                                 setOpenImport(true);
                                             }}
                                             type="primary"
                                         >
-                                            Thêm bằng excel
+                                            Thêm chủ đề bằng excel
                                         </Button>
+                                    </Col>
+                                    <Col
+                                        md={{ span: 12 }}
+                                        span={24}
+                                        className="flex md:justify-start justify-center  mt-2"
+                                    >
+                                        <Button
+                                            onClick={() => {
+                                                setOpenImportWord(true);
+                                            }}
+                                            type="primary"
+                                        >
+                                            Thêm từ vựng
+                                        </Button>
+                                    </Col>
+                                    <Col
+                                        md={{ span: 12 }}
+                                        span={24}
+                                        className="flex md:justify-end justify-center mt-2"
+                                    >
+                                        <Button
+                                            onClick={() => {
+                                                setTypeExcel(typeImportExcel.word);
+                                                setOpenImport(true);
+                                            }}
+                                            type="primary"
+                                        >
+                                            Thêm từ vựng bằng excel
+                                        </Button>
+                                    </Col>
+                                    <Col span={24} className="mt-2">
+                                        <Form form={formTopic}>
+                                            <Form.Item label="Chủ đề" name="topicId" initialValue={-1}>
+                                                <Select
+                                                    onChange={() => {
+                                                        handleSetData();
+                                                    }}
+                                                >
+                                                    <Select.Option value={-1}>Tất cả</Select.Option>
+                                                    {topics.map((x) => (
+                                                        <Select.Option value={x.id}>{x.name}</Select.Option>
+                                                    ))}
+                                                </Select>
+                                            </Form.Item>
+                                        </Form>
+                                    </Col>
+                                    <Col span={24} className="mt-2 md:justify-start flex justify-center">
+                                        Danh sách từ vựng
                                     </Col>
                                 </Row>
                             </>
                         )}
-                        rowKey={(record) => record.id}
                     />
                     {!!pagination.pageSize && !!pagination.total && (
                         <>

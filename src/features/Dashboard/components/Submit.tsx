@@ -13,68 +13,7 @@ const Submit = () => {
     const { search } = useLocation();
     const [form] = Form.useForm();
     const [editingKey, setEditingKey] = useState<number>(0);
-    const [data, setData] = useState<Array<PropsWord>>([
-        {
-            id: 1,
-            name: 'Duy',
-        },
-        {
-            id: 2,
-            name: 'Đông',
-        },
-        {
-            id: 3,
-            name: 'Dương',
-        },
-        {
-            id: 1,
-            name: 'Duy',
-        },
-        {
-            id: 2,
-            name: 'Đông',
-        },
-        {
-            id: 3,
-            name: 'Dương',
-        },
-        {
-            id: 1,
-            name: 'Duy',
-        },
-        {
-            id: 2,
-            name: 'Đông',
-        },
-        {
-            id: 3,
-            name: 'Dương',
-        },
-        {
-            id: 1,
-            name: 'Duy',
-        },
-        {
-            id: 2,
-            name: 'Đông',
-        },
-        {
-            id: 3,
-            name: 'Dương',
-        },
-        {
-            id: 1,
-            name: 'Duy',
-        },
-        {
-            id: 2,
-            name: 'Đông',
-        },
-        {
-            id: 3,
-            name: 'Dương',
-        },
-    ]);
+    const [data, setData] = useState<Array<PropsWord>>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [pagination, setPagination] = useState<PropsPagination>({
         current: search ? Number(search.split(configRoutes.page)[1]) : 1,
@@ -90,11 +29,35 @@ const Submit = () => {
             },
         },
         {
-            title: 'Tên loại vaccine',
+            title: 'Tiếng anh',
             editable: true,
-            dataIndex: 'name',
+            dataIndex: 'en',
             sorter: {
-                compare: (a: PropsWord, b: PropsWord) => a.name > b.name,
+                compare: (a: PropsWord, b: PropsWord) => a.en > b.en,
+            },
+        },
+        {
+            title: 'Loại từ',
+            editable: true,
+            dataIndex: 'type',
+            sorter: {
+                compare: (a: PropsWord, b: PropsWord) => a.type > b.type,
+            },
+        },
+        {
+            title: 'Tiếng Việt',
+            editable: true,
+            dataIndex: 'vi',
+            sorter: {
+                compare: (a: PropsWord, b: PropsWord) => a.vi > b.vi,
+            },
+        },
+        {
+            title: 'Chủ đề',
+            editable: true,
+            dataIndex: 'vi',
+            sorter: {
+                compare: (a: PropsWord, b: PropsWord) => a.topicName && b.topicName && a.topicName > b.topicName,
             },
         },
     ];
@@ -189,7 +152,7 @@ const Submit = () => {
                         columns={columns as ColumnsType<PropsWord>}
                         rowClassName="editable-row"
                         title={() => <>Các từ vựng bạn vừa học</>}
-                        rowKey={(record) => record.id}
+                        rowKey={(record) => record.id as number}
                     />
                     {!!pagination.pageSize && !!pagination.total && (
                         <>

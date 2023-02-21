@@ -1,10 +1,9 @@
 import { InboxOutlined, LoadingOutlined } from '@ant-design/icons';
-import type { UploadProps } from 'antd';
-import { Button, Col, Row, Spin, Upload, message } from 'antd';
-import { FC, useState } from 'react';
+import { Button, Col, Row, Spin, Upload, UploadFile, message } from 'antd';
+import { FC, useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
 import { defaultColumnEmpty, nameColumnsExcel, nameDownloadExcel, typeImportExcel } from '~/constraints';
-import { PropsImportExcel } from '~/interfaces';
+import { PropsImportExcel, PropsUploadFile } from '~/interfaces';
 import files from '../Files';
 import handleImport from './functions';
 const ImportExcel: FC<PropsImportExcel> = ({ title, type, open, setOpen, setTable }) => {
@@ -13,6 +12,7 @@ const ImportExcel: FC<PropsImportExcel> = ({ title, type, open, setOpen, setTabl
     const [data, setData] = useState<Array<Object>>([]);
     const [subData, setSubData] = useState<Array<Object>>([]);
     const [marginTop, setMarginTop] = useState(0);
+    const [fileList, setFileList] = useState<UploadFile<any>[] | undefined>();
     const readExcel = (file: Blob) => {
         const promise = new Promise((resolve, reject) => {
             const fileReader = new FileReader();
@@ -119,24 +119,25 @@ const ImportExcel: FC<PropsImportExcel> = ({ title, type, open, setOpen, setTabl
             setMarginTop((pre) => pre + 30);
         });
     };
-    interface abc extends UploadProps {
-        customRequest: (options: any) => Promise<void>;
-    }
-    const props: abc = {
+    const props: PropsUploadFile = {
         name: 'file',
         multiple: true,
+        // fileList,
         customRequest: async (options) => {
             const { onSuccess, file, onProgress } = options;
             const formData = new FormData();
             formData.append('file', file);
             onSuccess('Ok');
+            console.log(options);
             readExcel(file);
         },
-        onChange(info: { file: { name?: string; status?: string } }) {
+        onChange(info: { file: { name?: string; status?: string }; fileList: UploadFile<any>[] | undefined }) {
             const { status } = info.file;
             if (status !== 'uploading') {
             }
-            if (status === 'removed') setMarginTop((pre) => pre - 30);
+            if (status === 'removed') {
+                setMarginTop((pre) => pre - 30);
+            }
             if (status === 'done') {
                 message.success(`File ${info.file.name} tải lên thành công.`);
             } else if (status === 'error') {

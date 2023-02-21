@@ -6,11 +6,11 @@ const httpRequestPublic = axios.create({
         'Content-Type': 'application/json',
     },
 });
-export const get: PropsRequest.RequestType = async (path, data) => {
+export const get: PropsRequest.RequestType = async (path, data = {}) => {
     const res = await httpRequestPublic.get(path, data);
     return res.data;
 };
-export const del: PropsRequest.RequestType = async (path, data) => {
+export const del: PropsRequest.RequestType = async (path, data = {}) => {
     const res = await httpRequestPublic.delete(path, data);
     return res.data;
 };

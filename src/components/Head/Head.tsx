@@ -4,7 +4,7 @@ import { PropsHead } from '~/interfaces';
 const Head: FC<PropsHead> = ({ title }) => (
     <Helmet>
         <meta charSet="utf-8" />
-        <title>Learn vocabulary - {title}</title>
+        <title>{title} | Learn WordBook</title>
         {/* <link rel="canonical" href="http://mysite.com/example" /> */}
     </Helmet>
 );

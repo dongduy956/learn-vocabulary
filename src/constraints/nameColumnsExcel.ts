@@ -11,11 +11,11 @@ type Word = {
     topicName: string;
 };
 export const topic: Topic = {
-    name: 'Tên chủ đề',
+    name: 'Name',
 };
 export const word: Word = {
-    en: 'Tiếng Anh',
-    vi: 'Tiếng Việt',
-    type: 'Loại từ',
-    topicName: 'Chủ đề',
+    en: 'En',
+    vi: 'Vi',
+    type: 'Type',
+    topicName: 'Topic',
 };

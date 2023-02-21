@@ -4,5 +4,5 @@ export default interface PropsImportExcel {
     type: string;
     open: boolean;
     setOpen: (a: boolean) => void;
-    setTable: (a: ParamsSetTable) => void;
+    setTable: (a?: ParamsSetTable) => void;
 }

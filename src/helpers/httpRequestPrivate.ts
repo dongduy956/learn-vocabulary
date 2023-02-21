@@ -41,11 +41,11 @@ axios.interceptors.response.use(
         return Promise.reject(error);
     },
 );
-export const get: PropsRequest.RequestType = async (path, data) => {
+export const get: PropsRequest.RequestType = async (path, data = {}) => {
     const res = await axios.get(path, data);
     return res.data;
 };
-export const del: PropsRequest.RequestType = async (path, data) => {
+export const del: PropsRequest.RequestType = async (path, data = {}) => {
     const res = await axios.delete(path, data);
     return res.data;
 };
