@@ -12,6 +12,7 @@ const urlApi = {
     getAllWords: `${tables.word}/GetAll`,
     getAllWordsPaging: `${tables.word}/GetAllPaging`,
     getWordsByTopicId: `${tables.word}/GetWordsByTopicId`,
+    getWordsByTopicIdPaging: `${tables.word}/GetWordsByTopicIdPaging`,
     searchWords: `${tables.word}/Search`,
     insertWord: `${tables.word}/Insert`,
     insertRangeWord: `${tables.word}/InsertRange`,

@@ -13,6 +13,7 @@ import {
     TableProps,
     Tooltip,
     Typography,
+    notification,
 } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { FC, useEffect, useState } from 'react';
@@ -22,11 +23,11 @@ import ImportExcel from '~/components/ImportExcel';
 import { configRoutes, configTitle } from '~/configs';
 import { pageSizeOptions, typeImportExcel } from '~/constraints';
 import { arrayLibrary } from '~/helpers';
-import { ParamsSettable, PropsEditTable, PropsPagination, PropsTopic, PropsWord } from '~/interfaces';
+import { ParamsSettable, PropsEditTableWord, PropsPagination, PropsTopic, PropsWord } from '~/interfaces';
 import { topicServices, wordServices } from '~/services';
 import FormImportTopic from './FormImportTopic';
 import FormImportWord from './FormImportWord';
-const EditableCell: FC<PropsEditTable<PropsWord>> = ({
+const EditableCell: FC<PropsEditTableWord> = ({
     editing,
     dataIndex,
     title,
@@ -34,10 +35,19 @@ const EditableCell: FC<PropsEditTable<PropsWord>> = ({
     record,
     index,
     children,
+    topics,
     ...restProps
 }) => {
-    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
-
+    const inputNode =
+        inputType === 'select' ? (
+            <Select>
+                {topics.map((x) => (
+                    <Select.Option value={x.id}>{x.name}</Select.Option>
+                ))}
+            </Select>
+        ) : (
+            <Input />
+        );
     return (
         <td {...restProps}>
             {editing ? (
@@ -189,23 +199,20 @@ const Words = () => {
         try {
             const row = await form.validateFields();
             if (id > 0) {
-                // const resultUpdate = await typeOfVaccineService.updateTypeOfVaccine(id, row);
-                // if (resultUpdate.isSuccess) {
-                //     if (debounced)
-                //         fetchData({
-                //             pagination,
-                //             searchText: debounced,
-                //         });
-                //     else
-                //         fetchData({
-                //             pagination,
-                //         });
-                //     notification.success({
-                //         message: 'Thành công',
-                //         description: resultUpdate.messages[0],
-                //         duration: 3,
-                //     });
-                // }
+                const topicId: number = Number.isInteger(row.topicName) ? row.topicName : form.getFieldValue('topicId');
+                delete row.topicName;
+                const resultUpdate = await wordServices.updateWord(id, {
+                    ...row,
+                    topicId,
+                });
+                if (resultUpdate.isSuccess) {
+                    notification.success({
+                        message: 'Thành công',
+                        description: resultUpdate.messages[0],
+                        duration: 3,
+                    });
+                    handleSetData();
+                }
                 setEditingKey(0);
             }
         } catch (errInfo) {}
@@ -219,10 +226,11 @@ const Words = () => {
             ...col,
             onCell: (record: PropsWord) => ({
                 record,
-                inputType: col.dataIndex === 'number' ? 'number' : 'text',
+                inputType: col.dataIndex === 'topicName' ? 'select' : 'text',
                 dataIndex: col.dataIndex,
                 title: col.title,
                 editing: isEditing(record),
+                topics,
             }),
         };
     });
@@ -239,7 +247,7 @@ const Words = () => {
                     (params.pagination as PropsPagination).pageSize as number,
                 );
             else if (topicId !== -1)
-                res = await wordServices.getWordsByTopicId(
+                res = await wordServices.getWordsByTopicIdPaging(
                     topicId,
                     (params.pagination as PropsPagination).current,
                     (params.pagination as PropsPagination).pageSize as number,
@@ -260,29 +268,26 @@ const Words = () => {
             setPagination(newPagination);
         })();
     };
-    const handleDelete = (id: number) => {
-        (async () => {
-            setLoading(true);
-            // const res = await typeOfVaccineService.deleteTypeOfVaccine(id);
-            // if (res.data)
-            //     notification.success({
-            //         message: 'Thành công',
-            //         description: res.messages[0],
-            //         duration: 3,
-            //     });
-            // else
-            //     notification.error({
-            //         message: 'Lỗi',
-            //         description: res.messages[0],
-            //         duration: 3,
-            //     });
-            // setLoading(false);
-            // fetchData({
-            //     pagination,
-            //     delete: true,
-            //     searchText: debounced,
-            // });
-        })();
+    const handleDelete = async (id: number) => {
+        setLoading(true);
+        const res = await wordServices.deleteWord(id);
+        if (res.data)
+            notification.success({
+                message: 'Thành công',
+                description: res.messages[0],
+                duration: 3,
+            });
+        else
+            notification.error({
+                message: 'Lỗi',
+                description: res.messages[0],
+                duration: 3,
+            });
+        setLoading(false);
+        fetchData({
+            pagination,
+            // searchText: debounced,
+        });
     };
 
     useEffect(() => {
