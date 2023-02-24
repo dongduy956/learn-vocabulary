@@ -1,8 +1,8 @@
-import { Suspense } from 'react';
+import { Suspense, FC } from 'react';
 
 import Loader from './Loader';
 
-const Loadable = (Component) => (props) =>
+const Loadable: FC = (Component) => (props) =>
     (
         <Suspense fallback={<Loader />}>
             <Component {...props} />
