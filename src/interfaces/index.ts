@@ -1,4 +1,4 @@
-export type { default as StoreState } from './StoreState';
+export type { default } from './StoreState';
 export type { default as PropWithChildren } from './PropWithChildren';
 export type { default as PropsHead } from './PropsHead';
 export type { default as PropsEditTable } from './PropsEditTable';
@@ -16,4 +16,5 @@ export type { default as PropsUploadFile } from './PropsUploadFile';
 export type { default as PropsWordLearn } from './PropsWordLearn';
 export type { default as PropsDataLearn } from './PropsDataLearn';
 export type { default as PropsSubmit } from './PropsSubmit';
+export type { default as PropsLearnedWord } from './PropsLearnedWord';
 export * as PropsRequest from './PropsRequest';

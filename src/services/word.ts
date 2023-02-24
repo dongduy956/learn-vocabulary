@@ -52,7 +52,7 @@ export const getWordsByTopicIdPaging = async (
         return response;
     }
 };
-export const searchWords = async (q: string, page: number, pagesize: number): Promise<Object | any> => {
+export const searchWords = async (q: string, page?: number, pagesize?: number): Promise<Object | any> => {
     try {
         const res = await httpRequestPublic.get<Object>(configUrlApi.searchWords, {
             params: {

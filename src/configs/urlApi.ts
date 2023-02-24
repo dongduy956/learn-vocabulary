@@ -1,12 +1,16 @@
 const tables = {
     topic: 'Topic',
     word: 'Word',
+    learnedWord: 'LearnedWord',
 };
 const urlApi = {
     //topic
     getAllTopics: `${tables.topic}/GetAll`,
+    getAllTopicsPaging: `${tables.topic}/GetAllPaging`,
     searchTopics: `${tables.topic}/Search`,
     insertTopic: `${tables.topic}/Insert`,
+    updateTopic: `${tables.topic}/Update`,
+    deleteTopic: `${tables.topic}/Delete`,
     insertRangeTopic: `${tables.topic}/InsertRange`,
     //word
     getAllWords: `${tables.word}/GetAll`,
@@ -18,5 +22,12 @@ const urlApi = {
     insertRangeWord: `${tables.word}/InsertRange`,
     updateWord: `${tables.word}/Update`,
     deleteWord: `${tables.word}/Delete`,
+    //learnedWord
+    getAllLearnedWords: `${tables.learnedWord}/GetAll`,
+    getAllIncorrectLearnedWords: `${tables.learnedWord}/GetAllIncorrect`,
+    getAllLearnedWordsPaging: `${tables.learnedWord}/GetAllPaging`,
+    searchLearnedWords: `${tables.learnedWord}/Search`,
+    insertRangeLearnedWord: `${tables.learnedWord}/InsertRange`,
+    updateRangeLearnedWord: `${tables.learnedWord}/UpdateRange`,
 };
 export default urlApi;

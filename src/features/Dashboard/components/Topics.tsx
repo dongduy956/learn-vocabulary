@@ -7,7 +7,6 @@ import {
     Pagination,
     Popconfirm,
     Row,
-    Select,
     Table,
     TableProps,
     Tooltip,
@@ -16,18 +15,18 @@ import {
 } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { FC, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Head from '~/components/Head';
 import ImportExcel from '~/components/ImportExcel';
-import { configRoutes, configTitle } from '~/configs';
+import { configTitle } from '~/configs';
 import { pageSizeOptions, typeImportExcel } from '~/constraints';
 import { arrayLibrary } from '~/helpers';
-import { ParamsSettable, PropsEditTableWord, PropsPagination, PropsTopic, PropsWord } from '~/interfaces';
-import { topicServices, wordServices } from '~/services';
-import FormImportWord from './FormImportWord';
-import { useSelector } from 'react-redux';
-import { addTopicSelector } from '~/store';
-const EditableCell: FC<PropsEditTableWord> = ({
+import { ParamsSettable, PropsEditTable, PropsPagination, PropsTopic } from '~/interfaces';
+import { topicServices } from '~/services';
+import FormImportTopic from './FormImportTopic';
+import { SliceTopic } from '~/store/Slice';
+const EditableCell: FC<PropsEditTable<PropsTopic>> = ({
     editing,
     dataIndex,
     title,
@@ -35,19 +34,9 @@ const EditableCell: FC<PropsEditTableWord> = ({
     record,
     index,
     children,
-    topics,
     ...restProps
 }) => {
-    const inputNode =
-        inputType === 'select' ? (
-            <Select>
-                {topics.map((x) => (
-                    <Select.Option value={x.id}>{x.name}</Select.Option>
-                ))}
-            </Select>
-        ) : (
-            <Input />
-        );
+    const inputNode = inputType === 'number' ? <></> : <Input />;
     return (
         <td {...restProps}>
             {editing ? (
@@ -75,16 +64,13 @@ const EditableCell: FC<PropsEditTableWord> = ({
         </td>
     );
 };
-const Words = () => {
-    const history = useNavigate();
-    const stateAddTopic = useSelector(addTopicSelector);
+const Topics = () => {
+    const dispatch = useDispatch();
     const [form] = Form.useForm();
-    const [formTopic] = Form.useForm();
     const [editingKey, setEditingKey] = useState<number>(0);
     const [openImport, setOpenImport] = useState<boolean>(false);
-    const [openImportWord, setOpenImportWord] = useState<boolean>(false);
-    const [topics, setTopics] = useState<Array<PropsTopic>>([]);
-    const [data, setData] = useState<Array<PropsWord>>([]);
+    const [openImportTopic, setOpenImportTopic] = useState<boolean>(false);
+    const [data, setData] = useState<Array<PropsTopic>>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [pagination, setPagination] = useState<PropsPagination>({
         current: 1,
@@ -93,7 +79,7 @@ const Words = () => {
         {
             title: 'Thao tác',
             dataIndex: 'operation',
-            render: (_: any, record: PropsWord) => {
+            render: (_: any, record: PropsTopic) => {
                 const editable = isEditing(record);
                 return editable ? (
                     <div className="flex justify-center">
@@ -105,7 +91,7 @@ const Words = () => {
                 ) : (
                     data.length > 0 && (
                         <div className="flex justify-center">
-                            <Tooltip placement="bottom" title={`Xoá ${record.en.toLowerCase()}`} color="cyan">
+                            <Tooltip placement="bottom" title={`Xoá ${record.name.toLowerCase()}`} color="cyan">
                                 <Typography.Link className="mr-2">
                                     <Popconfirm
                                         title="Bạn chắc chắn xoá?"
@@ -116,7 +102,7 @@ const Words = () => {
                                     </Popconfirm>
                                 </Typography.Link>
                             </Tooltip>
-                            <Tooltip placement="bottom" title={`Sửa ${record.en.toLowerCase()}`} color="cyan">
+                            <Tooltip placement="bottom" title={`Sửa ${record.name.toLowerCase()}`} color="cyan">
                                 <Typography.Link disabled={editingKey !== 0} onClick={() => edit(record)}>
                                     <EditOutlined />
                                 </Typography.Link>
@@ -130,59 +116,24 @@ const Words = () => {
             title: 'No.',
             dataIndex: 'no',
             sorter: {
-                compare: (a: PropsWord, b: PropsWord) => a.no && b.no && a.no - b.no,
+                compare: (a: PropsTopic, b: PropsTopic) => a.no && b.no && a.no - b.no,
             },
         },
         {
-            title: 'Tiếng anh',
+            title: 'Tên chủ đề',
             editable: true,
-            dataIndex: 'en',
+            dataIndex: 'name',
             sorter: {
-                compare: (a: PropsWord, b: PropsWord) => a.en > b.en,
-            },
-        },
-        {
-            title: 'Loại từ',
-            editable: true,
-            dataIndex: 'type',
-            sorter: {
-                compare: (a: PropsWord, b: PropsWord) => a.type > b.type,
-            },
-        },
-        {
-            title: 'Tiếng Việt',
-            editable: true,
-            dataIndex: 'vi',
-            sorter: {
-                compare: (a: PropsWord, b: PropsWord) => a.vi > b.vi,
-            },
-        },
-        {
-            title: 'Chủ đề',
-            editable: true,
-            dataIndex: 'topicName',
-            sorter: {
-                compare: (a: PropsWord, b: PropsWord) => a.topicName && b.topicName && a.topicName > b.topicName,
+                compare: (a: PropsTopic, b: PropsTopic) => a.name > b.name,
             },
         },
     ];
-    const handleSetTopics = () => {
-        (async () => {
-            setLoading(true);
-            const resultTopics = (await topicServices.getAllTopics()).data;
-            setLoading(false);
-            setTopics(resultTopics);
-        })();
-    };
     useEffect(() => {
-        handleSetTopics();
-    }, [stateAddTopic]);
-    useEffect(() => {
-        if (!data.every((x) => x.no) || !arrayLibrary.isGrow<Array<PropsWord>>(data))
+        if (!data.every((x) => x.no) || !arrayLibrary.isGrow<Array<PropsTopic>>(data))
             setData((pre) => pre.map((x, i) => ({ ...x, no: i + 1 })));
     }, [data]);
-    const isEditing = (record: PropsWord) => record.id === editingKey;
-    const edit = (record: PropsWord) => {
+    const isEditing = (record: PropsTopic) => record.id === editingKey;
+    const edit = (record: PropsTopic) => {
         form.setFieldsValue({
             ...record,
         });
@@ -195,14 +146,9 @@ const Words = () => {
     const save = async (id: number) => {
         setLoading(true);
         try {
-            const row = await form.validateFields();
+            const row: PropsTopic = await form.validateFields();
             if (id > 0) {
-                const topicId: number = Number.isInteger(row.topicName) ? row.topicName : form.getFieldValue('topicId');
-                delete row.topicName;
-                const resultUpdate = await wordServices.updateWord(id, {
-                    ...row,
-                    topicId,
-                });
+                const resultUpdate = await topicServices.updateTopic(id, row);
                 if (resultUpdate.isSuccess) {
                     notification.success({
                         message: 'Thành công',
@@ -222,13 +168,12 @@ const Words = () => {
         }
         return {
             ...col,
-            onCell: (record: PropsWord) => ({
+            onCell: (record: PropsTopic) => ({
                 record,
                 inputType: col.dataIndex === 'topicName' ? 'select' : 'text',
                 dataIndex: col.dataIndex,
                 title: col.title,
                 editing: isEditing(record),
-                topics,
             }),
         };
     });
@@ -237,26 +182,19 @@ const Words = () => {
         (async () => {
             setLoading(true);
             let res;
-            const topicId: number = formTopic.getFieldValue('topicId');
             if (params.searchText)
-                res = await wordServices.searchWords(
+                res = await topicServices.searchTopics(
                     params.searchText as string,
                     (params.pagination as PropsPagination).current as number,
                     (params.pagination as PropsPagination).pageSize as number,
                 );
-            else if (topicId !== -1)
-                res = await wordServices.getWordsByTopicIdPaging(
-                    topicId,
-                    (params.pagination as PropsPagination).current,
-                    (params.pagination as PropsPagination).pageSize as number,
-                );
             else
-                res = await wordServices.getAllWordsPaging(
+                res = await topicServices.getAllTopicsPaging(
                     (params.pagination as PropsPagination).current as number,
                     (params.pagination as PropsPagination).pageSize as number,
                 );
             setLoading(false);
-            const newData: Array<PropsWord> = res.data;
+            const newData: Array<PropsTopic> = res.data;
             setData(newData.map((item) => ({ ...item, key: item.id })));
             const newPagination: PropsPagination = {
                 ...params.pagination,
@@ -268,7 +206,7 @@ const Words = () => {
     };
     const handleDelete = async (id: number) => {
         setLoading(true);
-        const res = await wordServices.deleteWord(id);
+        const res = await topicServices.deleteTopic(id);
         if (res.data)
             notification.success({
                 message: 'Thành công',
@@ -282,17 +220,14 @@ const Words = () => {
                 duration: 3,
             });
         setLoading(false);
-        fetchData({
-            pagination,
-            // searchText: debounced,
-        });
+        handleSetData();
     };
 
     useEffect(() => {
         handleSetData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    const handleTableChange: TableProps<PropsWord>['onChange'] = (_, filters, sorter) => {
+    const handleTableChange: TableProps<PropsTopic>['onChange'] = (_, filters, sorter) => {
         fetchData({
             ...sorter,
             pagination,
@@ -301,6 +236,7 @@ const Words = () => {
     };
 
     const handleSetData = (params: ParamsSettable = {}) => {
+        dispatch(SliceTopic.actions.setAdd());
         const newPagination = { ...pagination };
         if (params.page) newPagination.current = params.page;
         if (params.pageSize) newPagination.pageSize = params.pageSize;
@@ -320,16 +256,17 @@ const Words = () => {
     return (
         <>
             <Head title={`${configTitle.dashboard}`} />
-            <FormImportWord
+
+            <FormImportTopic
                 setTable={handleSetData}
-                open={openImportWord}
-                title="Thêm từ vựng"
-                setOpen={setOpenImportWord}
+                open={openImportTopic}
+                title="Thêm chủ đề"
+                setOpen={setOpenImportTopic}
             />
             <ImportExcel
                 setTable={handleSetData}
-                title={`Nhập excel từ vựng`}
-                type={typeImportExcel.word}
+                title={`Nhập excel chủ đề`}
+                type={typeImportExcel.topic}
                 open={openImport}
                 setOpen={setOpenImport}
             />
@@ -362,7 +299,7 @@ const Words = () => {
                         scroll={{
                             x: true,
                         }}
-                        columns={mergedColumns as ColumnsType<PropsWord>}
+                        columns={mergedColumns as ColumnsType<PropsTopic>}
                         rowClassName="editable-row"
                         rowKey={(record) => record.id as number}
                         title={() => (
@@ -371,7 +308,7 @@ const Words = () => {
                                     <Col span={12}>
                                         <Button
                                             onClick={() => {
-                                                setOpenImportWord(true);
+                                                setOpenImportTopic(true);
                                             }}
                                             type="primary"
                                         >
@@ -388,24 +325,9 @@ const Words = () => {
                                             Nhập excel
                                         </Button>
                                     </Col>
-                                    <Col span={24} className="mt-2">
-                                        <Form form={formTopic}>
-                                            <Form.Item label="Chủ đề" name="topicId" initialValue={-1}>
-                                                <Select
-                                                    onChange={() => {
-                                                        handleSetData();
-                                                    }}
-                                                >
-                                                    <Select.Option value={-1}>Tất cả</Select.Option>
-                                                    {topics.map((x) => (
-                                                        <Select.Option value={x.id}>{x.name}</Select.Option>
-                                                    ))}
-                                                </Select>
-                                            </Form.Item>
-                                        </Form>
-                                    </Col>
+
                                     <Col span={24} className="mt-2 md:justify-start flex justify-center">
-                                        Danh sách từ vựng
+                                        Danh sách chủ đề
                                     </Col>
                                 </Row>
                             </>
@@ -428,4 +350,4 @@ const Words = () => {
         </>
     );
 };
-export default Words;
+export default Topics;

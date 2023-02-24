@@ -1,7 +1,4 @@
-type typeLogin = {
-    login: boolean;
-};
-type stateType = {
-    auth: typeLogin;
-};
-export const loginSelector = (state: stateType) => state.auth.login;
+import StoreState from '~/interfaces';
+
+export const loginSelector = (state: StoreState) => state.auth.login;
+export const addTopicSelector = (state: StoreState) => state.topic.add;

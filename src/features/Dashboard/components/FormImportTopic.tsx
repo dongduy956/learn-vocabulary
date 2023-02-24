@@ -3,7 +3,7 @@ import { FC, useState } from 'react';
 import { PropsFormImportTopic, PropsTopic } from '~/interfaces';
 import { topicServices } from '~/services';
 
-const FormImportTopic: FC<PropsFormImportTopic> = ({ title, open, setOpen, setTopics }) => {
+const FormImportTopic: FC<PropsFormImportTopic> = ({ title, open, setOpen, setTable }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [formAdd] = Form.useForm();
     const onFinish = async (params: PropsTopic): Promise<void> => {
@@ -24,7 +24,7 @@ const FormImportTopic: FC<PropsFormImportTopic> = ({ title, open, setOpen, setTo
             formAdd.setFieldsValue({
                 name: '',
             });
-            setTopics();
+            setTable();
         } else
             notification.error({
                 message: 'Lỗi',

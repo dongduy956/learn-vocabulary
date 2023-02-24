@@ -17,8 +17,8 @@ const handleTopic: PropsHandleImportEach<PropsTopic> = async (data, setOpen, set
     else {
         const resultInsert = await topicServices.insertRangeTopic(newData);
         if (resultInsert.isSuccess) {
-            message.warning(`Đã bỏ qua ${data.length - newData.length} loại vaccine do dữ liệu đã tồn tại.`);
-            message.success(`Thêm thành công ${newData.length} loại vaccine`);
+            message.warning(`Đã bỏ qua ${data.length - newData.length} chủ đề do dữ liệu đã tồn tại.`);
+            message.success(`Thêm thành công ${newData.length} chủ đề`);
             setOpen(false);
             if (typeof setTable === 'function') setTable();
             setData([]);
