@@ -15,18 +15,18 @@ import {
     notification,
 } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { FC, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import Head from '~/components/Head';
 import ImportExcel from '~/components/ImportExcel';
-import { configRoutes, configTitle } from '~/configs';
+import { configTitle } from '~/configs';
 import { pageSizeOptions, typeImportExcel } from '~/constraints';
 import { arrayLibrary } from '~/helpers';
 import { ParamsSettable, PropsEditTableWord, PropsPagination, PropsTopic, PropsWord } from '~/interfaces';
 import { topicServices, wordServices } from '~/services';
-import FormImportWord from './FormImportWord';
-import { useSelector } from 'react-redux';
 import { addTopicSelector } from '~/store';
+import FormImportWord from './FormImportWord';
+import { useDebounce } from '~/hooks';
 const EditableCell: FC<PropsEditTableWord> = ({
     editing,
     dataIndex,
@@ -76,10 +76,11 @@ const EditableCell: FC<PropsEditTableWord> = ({
     );
 };
 const Words = () => {
-    const history = useNavigate();
     const stateAddTopic = useSelector(addTopicSelector);
     const [form] = Form.useForm();
     const [formTopic] = Form.useForm();
+    const [search, setSearch] = useState<string>('');
+    const debounced = useDebounce(search, 500);
     const [editingKey, setEditingKey] = useState<number>(0);
     const [openImport, setOpenImport] = useState<boolean>(false);
     const [openImportWord, setOpenImportWord] = useState<boolean>(false);
@@ -291,7 +292,7 @@ const Words = () => {
     useEffect(() => {
         handleSetData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [debounced]);
     const handleTableChange: TableProps<PropsWord>['onChange'] = (_, filters, sorter) => {
         fetchData({
             ...sorter,
@@ -304,18 +305,22 @@ const Words = () => {
         const newPagination = { ...pagination };
         if (params.page) newPagination.current = params.page;
         if (params.pageSize) newPagination.pageSize = params.pageSize;
-        // if (debounced)
-        //     fetchData({
-        //         pagination: newPagination,
-        // searchText: debounced,
-        //     });
-        // else
-        fetchData({
-            pagination: newPagination,
-        });
+        if (debounced)
+            fetchData({
+                pagination: newPagination,
+                searchText: debounced,
+            });
+        else
+            fetchData({
+                pagination: newPagination,
+            });
     };
     const handleChangPagination = (page: number, pageSize: number) => {
         handleSetData({ page, pageSize });
+    };
+    const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value.charAt(0) === ' ') return;
+        setSearch(e.target.value);
     };
     return (
         <>
@@ -403,6 +408,9 @@ const Words = () => {
                                                 </Select>
                                             </Form.Item>
                                         </Form>
+                                    </Col>
+                                    <Col span={24} className="mt-2">
+                                        <Input placeholder="Tìm kiếm từ khoá" onChange={handleSearch} />
                                     </Col>
                                     <Col span={24} className="mt-2 md:justify-start flex justify-center">
                                         Danh sách từ vựng

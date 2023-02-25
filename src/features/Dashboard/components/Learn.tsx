@@ -1,12 +1,13 @@
-import { Button, Col, Form, Input, Row, Select, Spin } from 'antd';
+import { Button, Col, Form, Input, Row, Select, Spin, Typography } from 'antd';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { numberLibrary } from '~/helpers';
 import { PropsDataLearn, PropsLearnedWord, PropsTopic, PropsWord, PropsWordLearn } from '~/interfaces';
 import { learnedWordServices, topicServices, wordServices } from '~/services';
-import Submit from './Submit';
-import { numberLibrary } from '~/helpers';
-import { useDispatch, useSelector } from 'react-redux';
 import { addTopicSelector } from '~/store';
+import Submit from './Submit';
 
+const { Title } = Typography;
 const Learn = () => {
     const accountId = 1;
     const stateAddTopic = useSelector(addTopicSelector);
@@ -44,7 +45,7 @@ const Learn = () => {
         setWordsLearn([]);
         setCheckLearned(false);
     };
-    const setLearnEmpty = () => {
+    const setLearnEmpty = (): void => {
         setInput('');
         setIndex(0);
     };
@@ -100,6 +101,9 @@ const Learn = () => {
     return (
         <Row className="pt-[24px] sm:pr-[24px] pr-[8px] sm:pl-[24px] md:pl-0 pl-[8px]">
             <Col className="rounded-[8px] p-[8px] border-[#f0f0f0] border-solid border-[1px]" span={24}>
+                <Title level={3} className="text-center">
+                    Chọn chủ đề để học
+                </Title>
                 <Spin spinning={loading} tip="Loading...">
                     <Form form={form}>
                         <Row>

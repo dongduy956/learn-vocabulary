@@ -1,8 +1,8 @@
-import { Suspense } from 'react';
+import React, { Suspense } from 'react';
 
 import Loader from './Loader';
 
-const Loadable = (Component) => (props) =>
+const Loadable = (Component: React.ComponentType<any>) => (props: any) =>
     (
         <Suspense fallback={<Loader />}>
             <Component {...props} />

@@ -14,18 +14,18 @@ import {
     notification,
 } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { FC, useEffect, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import Head from '~/components/Head';
 import ImportExcel from '~/components/ImportExcel';
 import { configTitle } from '~/configs';
 import { pageSizeOptions, typeImportExcel } from '~/constraints';
 import { arrayLibrary } from '~/helpers';
+import { useDebounce } from '~/hooks';
 import { ParamsSettable, PropsEditTable, PropsPagination, PropsTopic } from '~/interfaces';
 import { topicServices } from '~/services';
-import FormImportTopic from './FormImportTopic';
 import { SliceTopic } from '~/store/Slice';
+import FormImportTopic from './FormImportTopic';
 const EditableCell: FC<PropsEditTable<PropsTopic>> = ({
     editing,
     dataIndex,
@@ -67,6 +67,8 @@ const EditableCell: FC<PropsEditTable<PropsTopic>> = ({
 const Topics = () => {
     const dispatch = useDispatch();
     const [form] = Form.useForm();
+    const [search, setSearch] = useState<string>('');
+    const debounced = useDebounce(search, 500);
     const [editingKey, setEditingKey] = useState<number>(0);
     const [openImport, setOpenImport] = useState<boolean>(false);
     const [openImportTopic, setOpenImportTopic] = useState<boolean>(false);
@@ -226,7 +228,7 @@ const Topics = () => {
     useEffect(() => {
         handleSetData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [debounced]);
     const handleTableChange: TableProps<PropsTopic>['onChange'] = (_, filters, sorter) => {
         fetchData({
             ...sorter,
@@ -240,18 +242,22 @@ const Topics = () => {
         const newPagination = { ...pagination };
         if (params.page) newPagination.current = params.page;
         if (params.pageSize) newPagination.pageSize = params.pageSize;
-        // if (debounced)
-        //     fetchData({
-        //         pagination: newPagination,
-        // searchText: debounced,
-        //     });
-        // else
-        fetchData({
-            pagination: newPagination,
-        });
+        if (debounced)
+            fetchData({
+                pagination: newPagination,
+                searchText: debounced,
+            });
+        else
+            fetchData({
+                pagination: newPagination,
+            });
     };
     const handleChangPagination = (page: number, pageSize: number) => {
         handleSetData({ page, pageSize });
+    };
+    const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value.charAt(0) === ' ') return;
+        setSearch(e.target.value);
     };
     return (
         <>
@@ -325,7 +331,9 @@ const Topics = () => {
                                             Nhập excel
                                         </Button>
                                     </Col>
-
+                                    <Col span={24} className="mt-2">
+                                        <Input placeholder="Tìm kiếm từ khoá" value={search} onChange={handleSearch} />
+                                    </Col>
                                     <Col span={24} className="mt-2 md:justify-start flex justify-center">
                                         Danh sách chủ đề
                                     </Col>
