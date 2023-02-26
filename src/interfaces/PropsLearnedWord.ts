@@ -6,5 +6,7 @@ export default interface PropsLearnedWord extends PropsBaseEntity {
     fullName?: string;
     wordId: number;
     wordModel?: PropsWord;
-    correct: boolean;
+    correct?: boolean;
+    input: string;
+    rand: number;
 }

@@ -41,7 +41,7 @@ const Header = () => {
                     <img className="h-[40px]" src={images.logo} alt="Logo" />
                 </Link>
             </Col>
-            <Col className="justify-center flex" sm={{ span: 16 }} span={24}>
+            <Col sm={{ span: 16 }} span={24}>
                 <MenuHeader />
             </Col>
             <Col sm={{ span: 4 }} span={24} className="flex sm:justify-end justify-center sm:mb-0 mt-2 ">

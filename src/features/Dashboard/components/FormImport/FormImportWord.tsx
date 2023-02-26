@@ -7,12 +7,16 @@ const FormImportWord: FC<PropsFormImportWord> = ({ title, open, setOpen, setTabl
     const [loading, setLoading] = useState<boolean>(false);
     const [formAdd] = Form.useForm();
     const [topics, setTopics] = useState<Array<PropsTopic>>([]);
+    const getTopics = async (): Promise<void> => {
+        setLoading(true);
+        const resultTopics: Array<PropsTopic> = (await topicServices.getAllTopics()).data;
+        setTopics(resultTopics);
+        setLoading(false);
+    };
     useEffect(() => {
-        (async () => {
-            const resultTopics: Array<PropsTopic> = (await topicServices.getAllTopics()).data;
-            setTopics(resultTopics);
-        })();
-    }, []);
+        if (open) getTopics();
+    }, [open]);
+
     const onFinish = async (params: PropsWord): Promise<void> => {
         setLoading(true);
         const res = await wordServices.insertWord(params);

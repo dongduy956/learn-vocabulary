@@ -14,10 +14,9 @@ import {
     notification,
 } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { ChangeEvent, FC, useEffect, useState } from 'react';
+import { ChangeEvent, FC, lazy, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import Head from '~/components/Head';
-import ImportExcel from '~/components/ImportExcel';
 import { configTitle } from '~/configs';
 import { pageSizeOptions, typeImportExcel } from '~/constraints';
 import { arrayLibrary } from '~/helpers';
@@ -25,7 +24,9 @@ import { useDebounce } from '~/hooks';
 import { ParamsSettable, PropsEditTable, PropsPagination, PropsTopic } from '~/interfaces';
 import { topicServices } from '~/services';
 import { SliceTopic } from '~/store/Slice';
-import FormImportTopic from './FormImportTopic';
+const FormImportTopic = lazy(() => import('./FormImport/FormImportTopic'));
+const ImportExcel = lazy(() => import('~/components/ImportExcel'));
+
 const EditableCell: FC<PropsEditTable<PropsTopic>> = ({
     editing,
     dataIndex,

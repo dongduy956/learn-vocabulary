@@ -15,18 +15,26 @@ import {
     notification,
 } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { ChangeEvent, FC, useEffect, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useState, lazy } from 'react';
 import { useSelector } from 'react-redux';
 import Head from '~/components/Head';
-import ImportExcel from '~/components/ImportExcel';
 import { configTitle } from '~/configs';
 import { pageSizeOptions, typeImportExcel } from '~/constraints';
 import { arrayLibrary } from '~/helpers';
-import { ParamsSettable, PropsEditTableWord, PropsPagination, PropsTopic, PropsWord } from '~/interfaces';
+import {
+    ParamsSettable,
+    PropsEditTableWord,
+    PropsPagination,
+    PropsTopic,
+    PropsWord,
+    PropsFilterTable,
+} from '~/interfaces';
 import { topicServices, wordServices } from '~/services';
 import { addTopicSelector } from '~/store';
-import FormImportWord from './FormImportWord';
 import { useDebounce } from '~/hooks';
+const FormImportWord = lazy(() => import('./FormImport/FormImportWord'));
+const ImportExcel = lazy(() => import('~/components/ImportExcel'));
+
 const EditableCell: FC<PropsEditTableWord> = ({
     editing,
     dataIndex,
@@ -165,6 +173,17 @@ const Words = () => {
             sorter: {
                 compare: (a: PropsWord, b: PropsWord) => a.topicName && b.topicName && a.topicName > b.topicName,
             },
+            filters:
+                topics.length > 0
+                    ? topics.reduce(
+                          (arr: PropsFilterTable[], item) =>
+                              arr.some((x) => x.value === item.name.toLowerCase().trim())
+                                  ? arr
+                                  : [...arr, { text: item.name, value: item.name.toLowerCase().trim() }],
+                          [],
+                      )
+                    : [],
+            onFilter: (value: string, record: PropsWord) => record.topicName?.toLowerCase().trim() === value,
         },
     ];
     const handleSetTopics = () => {
@@ -237,6 +256,7 @@ const Words = () => {
     const fetchData = (params: ParamsSettable = {}) => {
         (async () => {
             setLoading(true);
+            if (search && !params.searchText) params.searchText = search;
             let res;
             const topicId: number = formTopic.getFieldValue('topicId');
             if (params.searchText)
@@ -338,13 +358,6 @@ const Words = () => {
                 open={openImport}
                 setOpen={setOpenImport}
             />
-
-            {/* <ManagerHeader
-                pageName={namePage}
-                setTable={handleSetData}
-                titleImport="Nhập dữ liệu loại khách"
-                typeImport={typeImportExcel.typeOfVaccine}
-            /> */}
 
             <div
                 className="site-layout-background sm:p-[24px] pl-[8px] pr-[8px]"

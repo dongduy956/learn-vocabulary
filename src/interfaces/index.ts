@@ -17,4 +17,5 @@ export type { default as PropsWordLearn } from './PropsWordLearn';
 export type { default as PropsDataLearn } from './PropsDataLearn';
 export type { default as PropsSubmit } from './PropsSubmit';
 export type { default as PropsLearnedWord } from './PropsLearnedWord';
+export type { default as PropsFilterTable } from './PropsFilterTable';
 export * as PropsRequest from './PropsRequest';

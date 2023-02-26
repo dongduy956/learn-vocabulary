@@ -1,5 +1,5 @@
-import { Button, Col, Form, Input, Row, Select, Spin, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { Button, Col, Form, Input, InputRef, Row, Select, Spin, Typography } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { numberLibrary } from '~/helpers';
 import { PropsDataLearn, PropsLearnedWord, PropsTopic, PropsWord, PropsWordLearn } from '~/interfaces';
@@ -10,6 +10,7 @@ import Submit from './Submit';
 const { Title } = Typography;
 const Learn = () => {
     const accountId = 1;
+    const refInput = useRef<InputRef>(null);
     const stateAddTopic = useSelector(addTopicSelector);
     const [form] = Form.useForm();
     const [loading, setLoading] = useState<boolean>(false);
@@ -37,14 +38,18 @@ const Learn = () => {
         } else if (topicId === 0) {
             const learnedWords: PropsLearnedWord[] = (await learnedWordServices.getAllIncorrectLearnedWords(accountId))
                 .data;
-            resultWordsByTopic = learnedWords.map((item) => item.wordModel as PropsWord);
+            setWordsByTopics(learnedWords.map((item) => ({ ...(item.wordModel as PropsWord), rand: item.rand })));
         }
         setLoading(false);
-        setWordsByTopics(resultWordsByTopic.map((x) => ({ ...x, rand: numberLibrary.getRandInteger(0, 1) })));
+        if (topicId !== 0)
+            setWordsByTopics(resultWordsByTopic.map((x) => ({ ...x, rand: numberLibrary.getRandInteger(0, 1) })));
         setLearnEmpty();
         setWordsLearn([]);
         setCheckLearned(false);
     };
+    useEffect(() => {
+        refInput.current?.focus();
+    }, [wordsByTopic]);
     const setLearnEmpty = (): void => {
         setInput('');
         setIndex(0);
@@ -61,8 +66,9 @@ const Learn = () => {
                 },
             ];
             setWordsLearn(newData);
-            if (!last) setIndex((pre) => pre + 1);
-            else {
+            if (!last) {
+                setIndex((pre) => pre + 1);
+            } else {
                 setLearnEmpty();
                 form.setFieldValue('topicId', -2);
                 setWordsByTopics([]);
@@ -70,21 +76,13 @@ const Learn = () => {
                 setLoading(true);
                 const learnedWords: PropsLearnedWord[] = (await learnedWordServices.getAllLearnedWords(accountId)).data;
                 const listUpdate = newData.reduce((arr: PropsLearnedWord[], item) => {
-                    const correct =
-                        item.rand === 0
-                            ? item.en.toLowerCase().trim() === item.input.toLowerCase().trim()
-                            : item.vi.toLowerCase().trim() === item.input.toLowerCase().trim();
                     const learnedWord = learnedWords.find((x) => x.wordId === item.id);
-                    return learnedWord ? [...arr, { ...learnedWord, correct }] : arr;
+                    return learnedWord ? [...arr, { ...learnedWord, input: item.input, rand: item.rand }] : arr;
                 }, []);
                 const listAdd: PropsLearnedWord[] = newData.reduce((arr: PropsLearnedWord[], item) => {
-                    const correct =
-                        item.rand === 0
-                            ? item.en.toLowerCase().trim() === item.input.toLowerCase().trim()
-                            : item.vi.toLowerCase().trim() === item.input.toLowerCase().trim();
                     return learnedWords.find((x) => x.wordId === (item.id as number))
                         ? arr
-                        : [...arr, { accountId, correct, wordId: item.id as number }];
+                        : [...arr, { accountId, wordId: item.id as number, rand: item.rand, input: item.input }];
                 }, []);
                 if (listAdd.length) await learnedWordServices.insertRangeLearnedWord(listAdd);
                 if (listUpdate.length) await learnedWordServices.updateRangeLearnedWord(listUpdate);
@@ -92,9 +90,10 @@ const Learn = () => {
             }
         }
     };
-    const handleContinueBack = async (type: boolean): Promise<void> => {
-        if (type) await handleContinue();
+    const handleContinueBack = async (type: boolean, last: boolean = false): Promise<void> => {
+        if (type) await handleContinue(last);
         else setIndex((pre) => pre - 1);
+        refInput.current?.focus();
         setInput('');
     };
 
@@ -141,13 +140,17 @@ const Learn = () => {
                                         {wordsByTopic[index].rand === 0 ? (
                                             <Col span={11}>
                                                 <Input
+                                                    ref={refInput}
                                                     value={input}
                                                     onChange={(e) => {
                                                         setInput(e.target.value);
                                                     }}
                                                     onKeyDown={async (e) => {
-                                                        if (e.keyCode === 13 && index < wordsByTopic.length - 1) {
-                                                            await handleContinueBack(true);
+                                                        if (e.keyCode === 13) {
+                                                            await handleContinueBack(
+                                                                true,
+                                                                index === wordsByTopic.length - 1,
+                                                            );
                                                         }
                                                     }}
                                                 />
@@ -161,13 +164,17 @@ const Learn = () => {
                                         {wordsByTopic[index].rand === 1 ? (
                                             <Col span={11}>
                                                 <Input
+                                                    ref={refInput}
                                                     value={input}
                                                     onChange={(e) => {
                                                         setInput(e.target.value);
                                                     }}
                                                     onKeyDown={async (e) => {
-                                                        if (e.keyCode === 13 && index < wordsByTopic.length - 1) {
-                                                            await handleContinueBack(true);
+                                                        if (e.keyCode === 13) {
+                                                            await handleContinueBack(
+                                                                true,
+                                                                index === wordsByTopic.length - 1,
+                                                            );
                                                         }
                                                     }}
                                                 />

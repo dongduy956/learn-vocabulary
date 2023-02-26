@@ -1,8 +1,11 @@
-import React from 'react';
+import { lazy } from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import { EmptyLayout, MainLayout } from './Layouts';
+import Loadable from '~/components/Loadable';
 import { configRoutes } from '~/configs';
-import { Auth, Dashboard } from './features';
+import { Auth } from './features';
+import { EmptyLayout, MainLayout } from './layouts';
+const Dashboard = Loadable(lazy(() => import('~/features/Dashboard')));
+const LearnedWord = Loadable(lazy(() => import('~/features/LearnedWord')));
 const App = () => {
     return (
         <Router>
@@ -12,6 +15,9 @@ const App = () => {
                 </Route>
                 <Route element={<MainLayout />}>
                     <Route path={`${configRoutes.dashboard}`} element={<Dashboard />} />
+                </Route>
+                <Route element={<MainLayout />}>
+                    <Route path={`${configRoutes.learnedWord}`} element={<LearnedWord />} />
                 </Route>
             </Routes>
         </Router>

@@ -5,7 +5,7 @@ const Main = () => {
     return (
         <>
             <Header />
-            <Watermark content="Learn vocabulary">
+            <Watermark content="Learn wordbook">
                 <Row>
                     <Col span={24}>
                         <Outlet />
