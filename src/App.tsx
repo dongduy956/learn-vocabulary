@@ -6,6 +6,7 @@ import { Auth } from './features';
 import { EmptyLayout, MainLayout } from './layouts';
 const Dashboard = Loadable(lazy(() => import('~/features/Dashboard')));
 const LearnedWord = Loadable(lazy(() => import('~/features/LearnedWord')));
+const Rank = Loadable(lazy(() => import('~/features/Rank')));
 const App = () => {
     return (
         <Router>
@@ -15,9 +16,8 @@ const App = () => {
                 </Route>
                 <Route element={<MainLayout />}>
                     <Route path={`${configRoutes.dashboard}`} element={<Dashboard />} />
-                </Route>
-                <Route element={<MainLayout />}>
                     <Route path={`${configRoutes.learnedWord}`} element={<LearnedWord />} />
+                    <Route path={`${configRoutes.rank}`} element={<Rank />} />
                 </Route>
             </Routes>
         </Router>

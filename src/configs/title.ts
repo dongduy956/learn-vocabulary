@@ -1,13 +1,10 @@
-export type type = {
-    auth: string;
-    dashboard: string;
-    rank: string;
-    learnedWord: string;
-};
-const title: type = {
-    auth: 'Login',
-    dashboard: 'Home',
-    rank: 'Top rank',
+import { PropsConfig } from '~/interfaces';
+
+const title: PropsConfig = {
+    dashboard: 'Trang chủ',
+    notFound: 'Không tìm thấy',
+    auth: 'Đăng nhập',
     learnedWord: 'Từ đã học',
+    rank: 'Bảng xếp hạng',
 };
 export default title;

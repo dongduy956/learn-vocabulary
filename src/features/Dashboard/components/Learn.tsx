@@ -1,4 +1,4 @@
-import { Button, Col, Form, Input, InputRef, Row, Select, Spin, Typography } from 'antd';
+import { Button, Col, Form, Input, InputRef, Row, Select, Spin, Typography, Radio, RadioChangeEvent } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { numberLibrary } from '~/helpers';
@@ -13,6 +13,7 @@ const Learn = () => {
     const refInput = useRef<InputRef>(null);
     const stateAddTopic = useSelector(addTopicSelector);
     const [form] = Form.useForm();
+    const [valueRadio, setValueRadio] = useState<number>(1);
     const [loading, setLoading] = useState<boolean>(false);
     const [index, setIndex] = useState<number>(0);
     const [input, setInput] = useState<string>('');
@@ -24,10 +25,18 @@ const Learn = () => {
         (async () => {
             setLoading(true);
             const resultTopics: Array<PropsTopic> = (await topicServices.getAllTopics()).data;
-            setTopics(resultTopics);
             setLoading(false);
+            setTopics(resultTopics);
         })();
     }, [stateAddTopic]);
+    const onChange = (e: RadioChangeEvent) => {
+        setValueRadio(e.target.value);
+    };
+    useEffect(() => {
+        (async () => {
+            await handleTopic(form.getFieldValue('topicId'));
+        })();
+    }, [valueRadio]);
     const handleTopic = async (topicId: number) => {
         let resultWordsByTopic: Array<PropsWord> = [];
         setLoading(true);
@@ -42,7 +51,11 @@ const Learn = () => {
         }
         setLoading(false);
         if (topicId !== 0)
-            setWordsByTopics(resultWordsByTopic.map((x) => ({ ...x, rand: numberLibrary.getRandInteger(0, 1) })));
+            if (valueRadio === 1)
+                setWordsByTopics(resultWordsByTopic.map((x) => ({ ...x, rand: numberLibrary.getRandInteger(0, 1) })));
+            else if (valueRadio === 2) setWordsByTopics(resultWordsByTopic.map((x) => ({ ...x, rand: 0 })));
+            else setWordsByTopics(resultWordsByTopic.map((x) => ({ ...x, rand: 1 })));
+
         setLearnEmpty();
         setWordsLearn([]);
         setCheckLearned(false);
@@ -128,6 +141,27 @@ const Learn = () => {
                                             </Select.Option>
                                         ))}
                                     </Select>
+                                </Form.Item>
+                            </Col>
+                            <Col span={24}>
+                                <Form.Item
+                                    label="Chỗ trống"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        },
+                                    ]}
+                                    initialValue={1}
+                                >
+                                    <Radio.Group
+                                        disabled={form.getFieldValue('topicId') === 0}
+                                        onChange={onChange}
+                                        value={valueRadio}
+                                    >
+                                        <Radio value={1}>Random</Radio>
+                                        <Radio value={2}>Tiếng Anh</Radio>
+                                        <Radio value={3}>Tiếng Việt</Radio>
+                                    </Radio.Group>
                                 </Form.Item>
                             </Col>
                         </Row>

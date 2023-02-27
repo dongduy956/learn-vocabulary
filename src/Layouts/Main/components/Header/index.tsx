@@ -4,8 +4,9 @@ import classNames from 'classnames/bind';
 import { Link } from 'react-router-dom';
 import images from '~/components/Images';
 import { configRoutes } from '~/configs';
-import MenuHeader from './MenuHeader';
+import MenuHeader from './Menu';
 import styles from './HeaderStyles.module.scss';
+import BreadcrumbCustom from './BreadcrumbCustom';
 const cx = classNames.bind(styles);
 const Header = () => {
     const items: MenuProps['items'] = [
@@ -36,12 +37,15 @@ const Header = () => {
 
     return (
         <Row className={` pl-[24px] pr-[24px] pt-4 pb-4 flex justify-between items-center ${cx('header')}`}>
-            <Col className="flex sm:mb-0 mb-2 sm:justify-start justify-center" sm={{ span: 4 }} span={24}>
+            <Col className="flex md:mb-0 mb-2 md:justify-start justify-center" md={{ span: 3 }} span={24}>
                 <Link to={configRoutes.dashboard}>
                     <img className="h-[40px]" src={images.logo} alt="Logo" />
                 </Link>
             </Col>
-            <Col sm={{ span: 16 }} span={24}>
+            <Col sm={{ span: 3 }} span={24} className="flex sm:justify-start justify-center">
+                <BreadcrumbCustom />
+            </Col>
+            <Col sm={{ span: 14 }} span={24}>
                 <MenuHeader />
             </Col>
             <Col sm={{ span: 4 }} span={24} className="flex sm:justify-end justify-center sm:mb-0 mt-2 ">

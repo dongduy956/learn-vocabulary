@@ -1,3 +1,11 @@
+import {
+    CheckCircleOutlined,
+    ClockCircleOutlined,
+    CloseCircleOutlined,
+    ExclamationCircleOutlined,
+    MinusCircleOutlined,
+    SyncOutlined,
+} from '@ant-design/icons';
 import { Col, Form, Input, Pagination, Row, Table, TableProps, Tag } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { ChangeEvent, useEffect, useState } from 'react';
@@ -41,15 +49,12 @@ const LearnedWord = () => {
                 ) {
                     return (
                         <>
-                            <Tag color="red">{record.input}</Tag>
-                            <Tag color="green">{record.wordModel?.en}</Tag>
+                            <Tag color="error">{record.input}</Tag>
+                            <Tag color="success">{record.wordModel?.en}</Tag>
                         </>
                     );
-                } else return <Tag color="green">{record.wordModel?.en}</Tag>;
+                } else return <Tag color="success">{record.wordModel?.en}</Tag>;
             },
-            filters: filterLearnedWord,
-            onFilter: (value: boolean, record: PropsLearnedWord) =>
-                value === (record.rand === 0 ? record.correct : true),
         },
         {
             title: 'Loại từ',
@@ -76,15 +81,28 @@ const LearnedWord = () => {
                 ) {
                     return (
                         <>
-                            <Tag color="red">{record.input}</Tag>
-                            <Tag color="green">{record.wordModel?.vi}</Tag>
+                            <Tag color="error">{record.input}</Tag>
+                            <Tag color="success">{record.wordModel?.vi}</Tag>
                         </>
                     );
-                } else return <Tag color="green">{record.wordModel?.vi}</Tag>;
+                } else return <Tag color="success">{record.wordModel?.vi}</Tag>;
             },
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'correct',
+            render: (_: any, record: PropsLearnedWord) =>
+                record?.correct ? (
+                    <Tag icon={<CheckCircleOutlined />} color="success">
+                        Đúng
+                    </Tag>
+                ) : (
+                    <Tag icon={<CloseCircleOutlined />} color="error">
+                        Sai
+                    </Tag>
+                ),
             filters: filterLearnedWord,
-            onFilter: (value: boolean, record: PropsLearnedWord) =>
-                value === (record.rand === 1 ? record.correct : true),
+            onFilter: (value: boolean, record: PropsLearnedWord) => value === record.correct,
         },
     ];
     useEffect(() => {
@@ -157,7 +175,7 @@ const LearnedWord = () => {
     };
     return (
         <>
-            <Head title={`${configTitle.dashboard}`} />
+            <Head title={`${configTitle.learnedWord}`} />
 
             <div
                 className="site-layout-background sm:p-[24px] pl-[8px] pr-[8px]"

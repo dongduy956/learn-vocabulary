@@ -1,35 +1,16 @@
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import {
-    Button,
-    Col,
-    Form,
-    Pagination,
-    Popconfirm,
-    Row,
-    Select,
-    Table,
-    TableProps,
-    Tag,
-    Tooltip,
-    Typography,
-} from 'antd';
+import { Form, Pagination, Table, TableProps, Tag } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { FC, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import Head from '~/components/Head';
-import { configRoutes, configTitle } from '~/configs';
+import { configTitle } from '~/configs';
 import { pageSizeOptions } from '~/constraints';
 import { arrayLibrary } from '~/helpers';
 import { ParamsSettable, PropsPagination, PropsSubmit, PropsWord, PropsWordLearn } from '~/interfaces';
 const Submit: FC<PropsSubmit> = ({ wordsLearn }) => {
-    const history = useNavigate();
-    const { search } = useLocation();
     const [form] = Form.useForm();
-    const [editingKey, setEditingKey] = useState<number>(0);
     const [data, setData] = useState<Array<PropsWordLearn>>([]);
-    const [loading, setLoading] = useState<boolean>(false);
     const [pagination, setPagination] = useState<PropsPagination>({
-        current: search ? Number(search.split(configRoutes.page)[1]) : 1,
+        current: 1,
         pageSize: 10,
     });
     const setDataPaging = (_pagination: PropsPagination): void => {
@@ -44,10 +25,8 @@ const Submit: FC<PropsSubmit> = ({ wordsLearn }) => {
     useEffect(() => {
         setPagination((pre) => ({ ...pre, total: wordsLearn.length }));
         setDataPaging({ ...pagination, total: wordsLearn.length });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [wordsLearn]);
-    useEffect(() => {
-        console.log(pagination);
-    }, [pagination]);
     const columns = [
         {
             title: 'No.',
@@ -67,11 +46,11 @@ const Submit: FC<PropsSubmit> = ({ wordsLearn }) => {
                 if (record.rand === 0 && record.input.toLowerCase().trim() !== record.en.toLowerCase().trim()) {
                     return (
                         <>
-                            <Tag color="red">{record.input}</Tag>
-                            <Tag color="green">{record.en}</Tag>
+                            <Tag color="error">{record.input}</Tag>
+                            <Tag color="success">{record.en}</Tag>
                         </>
                     );
-                } else return <Tag color="green">{record.en}</Tag>;
+                } else return <Tag color="success">{record.en}</Tag>;
             },
         },
         {
@@ -93,11 +72,11 @@ const Submit: FC<PropsSubmit> = ({ wordsLearn }) => {
                 if (record.rand === 1 && record.input.toLowerCase().trim() !== record.vi.toLowerCase().trim()) {
                     return (
                         <>
-                            <Tag color="red">{record.input}</Tag>
-                            <Tag color="green">{record.vi}</Tag>
+                            <Tag color="error">{record.input}</Tag>
+                            <Tag color="success">{record.vi}</Tag>
                         </>
                     );
-                } else return <Tag color="green">{record.vi}</Tag>;
+                } else return <Tag color="success">{record.vi}</Tag>;
             },
         },
         {
@@ -122,12 +101,6 @@ const Submit: FC<PropsSubmit> = ({ wordsLearn }) => {
         const newPagination = { ...pagination };
         if (params.page) newPagination.current = params.page;
         if (params.pageSize) newPagination.pageSize = params.pageSize;
-        // if (debounced)
-        //     fetchData({
-        //         pagination: newPagination,
-        // searchText: debounced,
-        //     });
-        // else
         setDataPaging(newPagination);
     };
     const handleChangPagination = (page: number, pageSize: number) => {
@@ -136,13 +109,6 @@ const Submit: FC<PropsSubmit> = ({ wordsLearn }) => {
     return (
         <>
             <Head title={`${configTitle.dashboard}`} />
-
-            {/* <ManagerHeader
-                pageName={namePage}
-                setTable={handleSetData}
-                titleImport="Nhập dữ liệu loại khách"
-                typeImport={typeImportExcel.typeOfVaccine}
-            /> */}
             <div
                 className="mt-2"
                 style={{
@@ -154,7 +120,6 @@ const Submit: FC<PropsSubmit> = ({ wordsLearn }) => {
                         bordered
                         dataSource={data}
                         pagination={false}
-                        loading={loading}
                         onChange={handleTableChange}
                         scroll={{
                             x: true,

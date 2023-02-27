@@ -1,33 +1,34 @@
 import { AppstoreOutlined, MailOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import { FC, useLayoutEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { configRoutes } from '~/configs';
+import { configRoutes, configTitle } from '~/configs';
 
 const items: MenuProps['items'] = [
     {
-        label: 'Trang chủ',
+        label: configTitle.dashboard,
         key: configRoutes.dashboard,
         icon: <AppstoreOutlined />,
     },
     {
-        label: 'Từ đã học',
+        label: configTitle.learnedWord,
         key: configRoutes.learnedWord,
         icon: <AppstoreOutlined />,
     },
     {
-        label: 'Bảng xếp hạng',
+        label: configTitle.rank,
         key: configRoutes.rank,
         icon: <MailOutlined />,
     },
 ];
 
-const App: React.FC = () => {
+const MenuHeader: FC = () => {
     const { pathname }: { pathname: string } = useLocation();
     const [current, setCurrent] = useState<string>(pathname);
     useLayoutEffect(() => {
         setCurrent(pathname);
+        console.log(pathname);
     }, [pathname]);
     const history = useNavigate();
     const onClick: MenuProps['onClick'] = (e) => {
@@ -36,7 +37,7 @@ const App: React.FC = () => {
 
     return (
         <Menu
-            className="flex justify-center"
+            className="flex sm:justify-start justify-center"
             onClick={onClick}
             selectedKeys={[current]}
             mode="horizontal"
@@ -45,4 +46,4 @@ const App: React.FC = () => {
     );
 };
 
-export default App;
+export default MenuHeader;

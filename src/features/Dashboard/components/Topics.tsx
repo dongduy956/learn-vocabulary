@@ -286,7 +286,7 @@ const Topics = () => {
             /> */}
 
             <div
-                className="site-layout-background sm:p-[24px] pl-[8px] pr-[8px]"
+                className="site-layout-background sm:p-[24px] pl-[8px] pr-[8px] md:mt-0 mt-2"
                 style={{
                     minHeight: 360,
                 }}

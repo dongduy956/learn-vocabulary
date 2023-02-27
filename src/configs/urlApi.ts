@@ -2,6 +2,7 @@ const tables = {
     topic: 'Topic',
     word: 'Word',
     learnedWord: 'LearnedWord',
+    statistical: 'Statistical',
 };
 const urlApi = {
     //topic
@@ -29,5 +30,7 @@ const urlApi = {
     searchLearnedWords: `${tables.learnedWord}/Search`,
     insertRangeLearnedWord: `${tables.learnedWord}/InsertRange`,
     updateRangeLearnedWord: `${tables.learnedWord}/UpdateRange`,
+    //statistical
+    getTopCustomer: `${tables.statistical}/GetTopCustomer`,
 };
 export default urlApi;
