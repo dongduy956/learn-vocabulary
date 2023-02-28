@@ -3,7 +3,10 @@ import { Spin } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { PropsDataTopCustomer, PropsTopCustomerColumn, PropsTopCustomerLine } from '~/interfaces';
 import { statisticalServices } from '~/services';
+import { useAuth } from '~/hooks';
+
 const Rank: FC = () => {
+    useAuth();
     const [dataColumn, setDataColumn] = useState<PropsTopCustomerColumn[]>([]);
     const [dataLine, setDataLine] = useState<PropsTopCustomerLine[]>([]);
 

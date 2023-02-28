@@ -1,9 +1,9 @@
 import { configUrlApi } from '~/configs';
-import { httpRequestPublic } from '~/helpers';
+import { httpRequestPrivate } from '~/helpers';
 import { PropsLearnedWord } from '~/interfaces';
 export const getAllLearnedWords = async (accountId: number): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.get<Object>(`${configUrlApi.getAllLearnedWords}/${accountId}`);
+        const res = await httpRequestPrivate.get<Object>(`${configUrlApi.getAllLearnedWords}/${accountId}`);
         return res;
     } catch ({ response }: any) {
         return response;
@@ -11,7 +11,7 @@ export const getAllLearnedWords = async (accountId: number): Promise<Object | an
 };
 export const getAllIncorrectLearnedWords = async (accountId: number): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.get<Object>(`${configUrlApi.getAllIncorrectLearnedWords}/${accountId}`);
+        const res = await httpRequestPrivate.get<Object>(`${configUrlApi.getAllIncorrectLearnedWords}/${accountId}`);
         return res;
     } catch ({ response }: any) {
         return response;
@@ -23,7 +23,7 @@ export const getAllLearnedWordsPaging = async (
     pageSize?: number,
 ): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.get<Object>(`${configUrlApi.getAllLearnedWordsPaging}/${accountId}`, {
+        const res = await httpRequestPrivate.get<Object>(`${configUrlApi.getAllLearnedWordsPaging}/${accountId}`, {
             params: {
                 page,
                 pageSize,
@@ -41,7 +41,7 @@ export const searchLearnedWords = async (
     pagesize?: number,
 ): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.get<Object>(`${configUrlApi.searchLearnedWords}/${accountId}`, {
+        const res = await httpRequestPrivate.get<Object>(`${configUrlApi.searchLearnedWords}/${accountId}`, {
             params: {
                 q,
                 page,
@@ -56,7 +56,7 @@ export const searchLearnedWords = async (
 
 export const insertRangeLearnedWord = async (params: Array<PropsLearnedWord>): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.post<Object>(configUrlApi.insertRangeLearnedWord, [...params]);
+        const res = await httpRequestPrivate.post<Object>(configUrlApi.insertRangeLearnedWord, [...params]);
         return res;
     } catch ({ response }: any) {
         return response;
@@ -64,7 +64,7 @@ export const insertRangeLearnedWord = async (params: Array<PropsLearnedWord>): P
 };
 export const updateRangeLearnedWord = async (params: Array<PropsLearnedWord>): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.put<Object>(configUrlApi.updateRangeLearnedWord, [...params]);
+        const res = await httpRequestPrivate.put<Object>(configUrlApi.updateRangeLearnedWord, [...params]);
         return res;
     } catch ({ response }: any) {
         return response;

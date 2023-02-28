@@ -1,9 +1,9 @@
-import { httpRequestPublic } from '~/helpers';
+import { httpRequestPrivate } from '~/helpers';
 import { configUrlApi } from '~/configs';
 import { PropsTopic } from '~/interfaces';
 export const getAllTopics = async (): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.get<Object>(configUrlApi.getAllTopics);
+        const res = await httpRequestPrivate.get<Object>(configUrlApi.getAllTopics);
         return res;
     } catch ({ response }: any) {
         return response;
@@ -11,7 +11,7 @@ export const getAllTopics = async (): Promise<Object | any> => {
 };
 export const getAllTopicsPaging = async (page?: number, pageSize?: number): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.get<Object>(configUrlApi.getAllTopicsPaging, {
+        const res = await httpRequestPrivate.get<Object>(configUrlApi.getAllTopicsPaging, {
             params: {
                 page,
                 pageSize,
@@ -24,7 +24,7 @@ export const getAllTopicsPaging = async (page?: number, pageSize?: number): Prom
 };
 export const searchTopics = async (q: string, page?: number, pagesize?: number): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.get<Object>(configUrlApi.searchTopics, {
+        const res = await httpRequestPrivate.get<Object>(configUrlApi.searchTopics, {
             params: {
                 q,
                 page,
@@ -39,7 +39,7 @@ export const searchTopics = async (q: string, page?: number, pagesize?: number):
 
 export const insertTopic = async (params: PropsTopic): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.post<Object>(configUrlApi.insertTopic, {
+        const res = await httpRequestPrivate.post<Object>(configUrlApi.insertTopic, {
             ...params,
         });
         return res;
@@ -49,7 +49,7 @@ export const insertTopic = async (params: PropsTopic): Promise<Object | any> => 
 };
 export const insertRangeTopic = async (params: Array<PropsTopic>): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.post<Object>(configUrlApi.insertRangeTopic, [...params]);
+        const res = await httpRequestPrivate.post<Object>(configUrlApi.insertRangeTopic, [...params]);
         return res;
     } catch ({ response }: any) {
         return response;
@@ -57,7 +57,7 @@ export const insertRangeTopic = async (params: Array<PropsTopic>): Promise<Objec
 };
 export const updateTopic = async (id: number, params: PropsTopic): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.put<Object>(`${configUrlApi.updateTopic}/${id}`, {
+        const res = await httpRequestPrivate.put<Object>(`${configUrlApi.updateTopic}/${id}`, {
             ...params,
         });
         return res;
@@ -67,7 +67,7 @@ export const updateTopic = async (id: number, params: PropsTopic): Promise<Objec
 };
 export const deleteTopic = async (id: number): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.del<Object>(`${configUrlApi.deleteTopic}/${id}`);
+        const res = await httpRequestPrivate.del<Object>(`${configUrlApi.deleteTopic}/${id}`);
         return res;
     } catch ({ response }: any) {
         return response;

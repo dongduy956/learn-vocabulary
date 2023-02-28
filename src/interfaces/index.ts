@@ -23,4 +23,8 @@ export type { default as TypeConfig } from './TypeConfig';
 export type { default as PropsTopCustomerColumn } from './PropsTopCustomerColumn';
 export type { default as PropsTopCustomerLine } from './PropsTopCustomerLine';
 export type { default as PropsDataTopCustomer } from './PropsDataTopCustomer';
+export type { default as PropsAccount } from './PropsAccount';
+export type { default as PropsUser } from './PropsUser';
+export type { default as PropsLogin } from './PropsLogin';
+export type { default as PropsJwtRequest } from './PropsJwtRequest';
 export * as PropsRequest from './PropsRequest';

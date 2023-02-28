@@ -16,7 +16,10 @@ import { arrayLibrary } from '~/helpers';
 import { useDebounce } from '~/hooks';
 import { ParamsSettable, PropsLearnedWord, PropsPagination } from '~/interfaces';
 import { learnedWordServices } from '~/services';
+import { useAuth } from '~/hooks';
 const LearnedWord = () => {
+    useAuth();
+
     const accountId = 1;
     const [form] = Form.useForm();
     const [search, setSearch] = useState<string>('');

@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-
+import { isLogin } from '~/helpers';
 export default createSlice({
-    name: 'Auth',
+    name: 'auth',
     initialState: {
-        login: false,
+        login: isLogin(),
     },
     reducers: {
         setLogin: (state, action) => {

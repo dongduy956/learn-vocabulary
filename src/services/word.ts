@@ -1,9 +1,9 @@
 import { configUrlApi } from '~/configs';
-import { httpRequestPublic } from '~/helpers';
+import { httpRequestPrivate } from '~/helpers';
 import { PropsWord } from '~/interfaces';
 export const getAllWordsPaging = async (page?: number, pagesize?: number): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.get<Object>(configUrlApi.getAllWordsPaging, {
+        const res = await httpRequestPrivate.get<Object>(configUrlApi.getAllWordsPaging, {
             params: {
                 page,
                 pagesize,
@@ -16,7 +16,7 @@ export const getAllWordsPaging = async (page?: number, pagesize?: number): Promi
 };
 export const getAllWords = async (): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.get<Object>(configUrlApi.getAllWords);
+        const res = await httpRequestPrivate.get<Object>(configUrlApi.getAllWords);
         return res;
     } catch ({ response }: any) {
         return response;
@@ -24,7 +24,7 @@ export const getAllWords = async (): Promise<Object | any> => {
 };
 export const getWordsByTopicId = async (topicId: number): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.get<Object>(configUrlApi.getWordsByTopicId, {
+        const res = await httpRequestPrivate.get<Object>(configUrlApi.getWordsByTopicId, {
             params: {
                 topicId,
             },
@@ -40,7 +40,7 @@ export const getWordsByTopicIdPaging = async (
     pagesize?: number,
 ): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.get<Object>(configUrlApi.getWordsByTopicIdPaging, {
+        const res = await httpRequestPrivate.get<Object>(configUrlApi.getWordsByTopicIdPaging, {
             params: {
                 topicId,
                 page,
@@ -54,7 +54,7 @@ export const getWordsByTopicIdPaging = async (
 };
 export const searchWords = async (q: string, page?: number, pagesize?: number): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.get<Object>(configUrlApi.searchWords, {
+        const res = await httpRequestPrivate.get<Object>(configUrlApi.searchWords, {
             params: {
                 q,
                 page,
@@ -69,7 +69,7 @@ export const searchWords = async (q: string, page?: number, pagesize?: number): 
 
 export const insertWord = async (params: PropsWord): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.post<Object>(configUrlApi.insertWord, {
+        const res = await httpRequestPrivate.post<Object>(configUrlApi.insertWord, {
             ...params,
         });
         return res;
@@ -79,7 +79,7 @@ export const insertWord = async (params: PropsWord): Promise<Object | any> => {
 };
 export const insertRangeWord = async (params: Array<PropsWord>): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.post<Object>(configUrlApi.insertRangeWord, [...params]);
+        const res = await httpRequestPrivate.post<Object>(configUrlApi.insertRangeWord, [...params]);
         return res;
     } catch ({ response }: any) {
         return response;
@@ -87,7 +87,7 @@ export const insertRangeWord = async (params: Array<PropsWord>): Promise<Object 
 };
 export const deleteWord = async (id: number): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.del<Object>(`${configUrlApi.deleteWord}/${id}`);
+        const res = await httpRequestPrivate.del<Object>(`${configUrlApi.deleteWord}/${id}`);
         return res;
     } catch ({ response }: any) {
         return response;
@@ -95,7 +95,7 @@ export const deleteWord = async (id: number): Promise<Object | any> => {
 };
 export const updateWord = async (id: number, params: PropsWord): Promise<Object | any> => {
     try {
-        const res = await httpRequestPublic.put<Object>(`${configUrlApi.updateWord}/${id}`, {
+        const res = await httpRequestPrivate.put<Object>(`${configUrlApi.updateWord}/${id}`, {
             ...params,
         });
         return res;

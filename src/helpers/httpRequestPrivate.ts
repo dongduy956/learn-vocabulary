@@ -1,18 +1,19 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { PropsRequest } from '~/interfaces';
+import { configStorage } from '~/configs';
+import { authServices } from '~/services';
 
 axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 axios.interceptors.request.use(
-    async (config) => {
-        // const session = Cookies.get(configStorage.login) ? JSON.parse(Cookies.get(configStorage.login)) : {};
-
-        // if (session?.accessToken) {
-        //     config.headers = {
-        //         ...config.headers,
-        //         authorization: `${session.accessToken_Type} ${session?.accessToken}`,
-        //     };
-        // }
+    async (config: any) => {
+        const session = Cookies.get(configStorage.login) ? JSON.parse(Cookies.get(configStorage.login) as string) : {};
+        if (session?.accessToken) {
+            config.headers = {
+                ...config.headers,
+                authorization: `Bearer ${session?.accessToken}`,
+            };
+        }
 
         return config;
     },
@@ -24,18 +25,21 @@ axios.interceptors.response.use(
         const config = error?.config;
         if (error?.response?.status === 401 && !config?.sent) {
             config.sent = true;
-            // const session = Cookies.get(configStorage.login) ? JSON.parse(Cookies.get(configStorage.login)) : {};
-            // const result = await authService.refreshToken({
-            //     accessToken: session?.accessToken,
-            //     refreshToken: session?.refreshToken,
-            // });
-            // if (result.isSuccess) {
-            //     Cookies.set(configStorage.login, JSON.stringify(result.data), { expires: result.data.expiredTime });
-            //     config.headers = {
-            //         ...config.headers,
-            //         authorization: `${result.data.accessToken_Type} ${result.data.accessToken}`,
-            //     };
-            // } else if (result.statusCode === 404) Cookies.remove(configStorage.login);
+            const session = Cookies.get(configStorage.login)
+                ? JSON.parse(Cookies.get(configStorage.login) as string)
+                : {};
+            const result = await authServices.refreshToken({
+                accessToken: session?.accessToken,
+                refreshToken: session?.refreshToken,
+            });
+            console.log(result);
+            if (result.isSuccess) {
+                Cookies.set(configStorage.login, JSON.stringify(result.data), { expires: result.data.expiredTime });
+                config.headers = {
+                    ...config.headers,
+                    authorization: `Bearer ${result.data.accessToken}`,
+                };
+            } else if (result.statusCode === 404) Cookies.remove(configStorage.login);
             return axios(config);
         }
         return Promise.reject(error);

@@ -189,9 +189,9 @@ const Words = () => {
     const handleSetTopics = () => {
         (async () => {
             setLoading(true);
-            const resultTopics = (await topicServices.getAllTopics()).data;
+            const resultTopics = (await topicServices.getAllTopics())?.data;
             setLoading(false);
-            setTopics(resultTopics);
+            if (resultTopics) setTopics(resultTopics);
         })();
     };
     useEffect(() => {
@@ -277,7 +277,7 @@ const Words = () => {
                     (params.pagination as PropsPagination).pageSize as number,
                 );
             setLoading(false);
-            const newData: Array<PropsWord> = res.data;
+            const newData: Array<PropsWord> = res.data ?? [];
             setData(newData.map((item) => ({ ...item, key: item.id })));
             const newPagination: PropsPagination = {
                 ...params.pagination,

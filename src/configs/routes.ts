@@ -3,7 +3,7 @@ import { PropsConfig } from '~/interfaces';
 const routes: PropsConfig = {
     dashboard: '/',
     notFound: '*',
-    auth: '/login',
+    auth: '/auth',
     learnedWord: '/learned-word',
     rank: '/rank',
 };

@@ -3,6 +3,10 @@ const tables = {
     word: 'Word',
     learnedWord: 'LearnedWord',
     statistical: 'Statistical',
+    auth: 'Auth',
+    account: 'Account',
+    user: 'User',
+    upload: 'Upload',
 };
 const urlApi = {
     //topic
@@ -32,5 +36,15 @@ const urlApi = {
     updateRangeLearnedWord: `${tables.learnedWord}/UpdateRange`,
     //statistical
     getTopCustomer: `${tables.statistical}/GetTopCustomer`,
+    //auth
+    login: `${tables.auth}/Login`,
+    logout: `${tables.auth}/Logout`,
+    refreshToken: `${tables.auth}/RefreshToken`,
+    //account
+    registerAccount: `${tables.account}/Register`,
+    //user
+    registerUser: `${tables.user}/Register`,
+    //upload
+    uploadImage: `${tables.upload}/UploadImage`,
 };
 export default urlApi;

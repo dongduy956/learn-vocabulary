@@ -26,7 +26,7 @@ const Learn = () => {
             setLoading(true);
             const resultTopics: Array<PropsTopic> = (await topicServices.getAllTopics()).data;
             setLoading(false);
-            setTopics(resultTopics);
+            if (resultTopics) setTopics(resultTopics);
         })();
     }, [stateAddTopic]);
     const onChange = (e: RadioChangeEvent) => {

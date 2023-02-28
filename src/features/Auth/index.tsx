@@ -1,17 +1,24 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Col, Form, Input, message, Row, Spin } from 'antd';
-import { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import { useEffect, useState, FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Head from '~/components/Head';
 import images from '~/components/Images';
-import { configTitle } from '~/configs';
+import { configRoutes, configStorage, configTitle } from '~/configs';
+import { authServices } from '~/services';
+import { SliceAuth } from '~/store/Slice';
 
-const Login = () => {
+const Auth: FC = () => {
+    const history = useNavigate();
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
     const dispatch = useDispatch();
+    const user =
+        localStorage.getItem(configStorage.remember) &&
+        JSON.parse(localStorage.getItem(configStorage.remember) as string);
 
     useEffect(() => {
         const handleResize = () => setScreenWidth(window.innerWidth);
@@ -19,11 +26,31 @@ const Login = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, [screenWidth]);
 
-    const onFinish = async (params) => {
+    const onFinish = async (params: any): Promise<void> => {
         const remember = params.remember;
         delete params.remember;
         setLoading(true);
-
+        const result = await authServices.login(params);
+        if (result.isSuccess) {
+            if (remember) {
+                localStorage.setItem(
+                    configStorage.remember,
+                    JSON.stringify({
+                        userName: params.username,
+                        password: params.password,
+                    }),
+                );
+            } else localStorage.removeItem(configStorage.remember);
+            Cookies.set(configStorage.login, JSON.stringify(result.data), { expires: result.data.expiredTime });
+            dispatch(SliceAuth.actions.setLogin(true));
+            history(configRoutes.dashboard);
+        } else {
+            messageApi.open({
+                type: 'error',
+                content: result.messages[0],
+                duration: 3,
+            });
+        }
         setLoading(false);
     };
     return (
@@ -56,7 +83,7 @@ const Login = () => {
                             >
                                 Đăng nhập vào tài khoản của bạn
                             </h1>
-                            <p style={{ color: 'rgba(63,67,80,0.72)' }}>Quản lý trung tâm tiêm chủng vnvc </p>
+                            <p style={{ color: 'rgba(63,67,80,0.72)' }}>Learn wordbook</p>
                             {screenWidth >= 770 && (
                                 <div className="inline-block absolute z-20" style={{ right: '-6%', bottom: '-17%' }}>
                                     <img className="inline" alt="login" src={images.auth} />
@@ -92,6 +119,7 @@ const Login = () => {
                                                 message: 'Vui lòng nhập vào tài khoản!',
                                             },
                                         ]}
+                                        initialValue={user && user.userName}
                                     >
                                         <Input size="large" />
                                     </Form.Item>
@@ -99,6 +127,7 @@ const Login = () => {
                                     <Form.Item
                                         label="Mật khẩu"
                                         name="password"
+                                        initialValue={user && user.password}
                                         rules={[
                                             {
                                                 required: true,
@@ -111,7 +140,7 @@ const Login = () => {
 
                                     <Form.Item
                                         name="remember"
-                                        valuePropName={'checked'}
+                                        valuePropName={user && 'checked'}
                                         wrapperCol={{
                                             offset: 0,
                                             span: 24,
@@ -151,4 +180,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Auth;

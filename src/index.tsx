@@ -31,13 +31,14 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
-    <React.StrictMode>
-        <Provider store={store}>
-            <GlobalStyles>
-                <App />
-            </GlobalStyles>
-        </Provider>
-    </React.StrictMode>,
+    // <React.StrictMode>
+
+    // </React.StrictMode>,
+    <Provider store={store}>
+        <GlobalStyles>
+            <App />
+        </GlobalStyles>
+    </Provider>,
 );
 
 // If you want to start measuring performance in your app, pass a function
