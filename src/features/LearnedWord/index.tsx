@@ -10,17 +10,21 @@ import { Col, Form, Input, Pagination, Row, Table, TableProps, Tag } from 'antd'
 import { ColumnsType } from 'antd/es/table';
 import { ChangeEvent, useEffect, useState } from 'react';
 import Head from '~/components/Head';
-import { configTitle } from '~/configs';
+import { configTitle, configStorage } from '~/configs';
 import { filterLearnedWord, pageSizeOptions } from '~/constraints';
 import { arrayLibrary } from '~/helpers';
 import { useDebounce } from '~/hooks';
 import { ParamsSettable, PropsLearnedWord, PropsPagination } from '~/interfaces';
 import { learnedWordServices } from '~/services';
 import { useAuth } from '~/hooks';
+import { decodeToken } from 'react-jwt';
+import Cookies from 'js-cookie';
 const LearnedWord = () => {
     useAuth();
 
-    const accountId = 1;
+    const accountId = decodeToken<any>(
+        JSON.parse(Cookies.get(configStorage.login) as string).accessToken as string,
+    ).nameid;
     const [form] = Form.useForm();
     const [search, setSearch] = useState<string>('');
     const debounced = useDebounce(search, 500);
