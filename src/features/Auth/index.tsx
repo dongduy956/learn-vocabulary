@@ -1,73 +1,32 @@
-import { LoadingOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Col, Form, Input, message, Row, Spin } from 'antd';
-import Cookies from 'js-cookie';
-import { useEffect, useState, FC } from 'react';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Col, Row } from 'antd';
+import { FC, useEffect, useState, lazy } from 'react';
 import Head from '~/components/Head';
 import images from '~/components/Images';
-import { configRoutes, configStorage, configTitle } from '~/configs';
-import { authServices } from '~/services';
-import { SliceAuth } from '~/store/Slice';
-
+import { configTitle } from '~/configs';
+const SignUp = lazy(() => import('./components/SignUp'));
+const SignIn = lazy(() => import('./components/SignIn'));
 const Auth: FC = () => {
-    const history = useNavigate();
-    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-    const [loading, setLoading] = useState(false);
-    const [messageApi, contextHolder] = message.useMessage();
-    const dispatch = useDispatch();
-    const user =
-        localStorage.getItem(configStorage.remember) &&
-        JSON.parse(localStorage.getItem(configStorage.remember) as string);
-
+    const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
+    const [openForm, setOpenForm] = useState<boolean>(true);
     useEffect(() => {
         const handleResize = () => setScreenWidth(window.innerWidth);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [screenWidth]);
-
-    const onFinish = async (params: any): Promise<void> => {
-        const remember = params.remember;
-        delete params.remember;
-        setLoading(true);
-        const result = await authServices.login(params);
-        if (result.isSuccess) {
-            if (remember) {
-                localStorage.setItem(
-                    configStorage.remember,
-                    JSON.stringify({
-                        userName: params.username,
-                        password: params.password,
-                    }),
-                );
-            } else localStorage.removeItem(configStorage.remember);
-            Cookies.set(configStorage.login, JSON.stringify(result.data), { expires: result.data.expiredTime });
-            dispatch(SliceAuth.actions.setLogin(true));
-            history(configRoutes.dashboard);
-        } else {
-            messageApi.open({
-                type: 'error',
-                content: result.messages[0],
-                duration: 3,
-            });
-        }
-        setLoading(false);
-    };
     return (
         <>
-            {contextHolder}
             <Head title={configTitle.auth} />
 
             <div
                 className="bg-no-repeat bg-center bg-cover flex justify-center flex-col"
                 style={{ minHeight: '100vh', backgroundImage: `url(${images.bgAuth})` }}
             >
-                <Row className="r-16 pl-16 mb-4 mt-2">
+                <Row className="sm:pr-16 sm:pl-16 pr-4 pl-4 mb-4 mt-2">
                     <Col span={24}>
                         <img className="w-[200px]" src={images.logo} alt="Logo VNVC" />
                     </Col>
                 </Row>
-                <div className="sm:mb-0 mb-2 pr-16 pl-16 grow">
+                <div className="sm:mb-0 mb-2 sm:pr-16 sm:pl-16 pr-4 pl-4 grow">
                     <Row>
                         <Col className="relative " md={{ span: 12 }} span={24}>
                             <h1
@@ -81,7 +40,7 @@ const Auth: FC = () => {
                                 }}
                                 className="m-0 text"
                             >
-                                Đăng nhập vào tài khoản của bạn
+                                {openForm ? 'Đăng nhập vào tài khoản của bạn' : 'Đăng ký tài khoản của bạn'}
                             </h1>
                             <p style={{ color: 'rgba(63,67,80,0.72)' }}>Learn wordbook</p>
                             {screenWidth >= 770 && (
@@ -90,89 +49,7 @@ const Auth: FC = () => {
                                 </div>
                             )}
                         </Col>
-                        <Col md={{ span: 12 }} span={24}>
-                            <div
-                                style={{
-                                    boxShadow: '0 12px 32px 0 rgba(0,0,0,0.12)',
-                                    border: '1px solid rgba(63,67,80,0.08)',
-                                }}
-                                className="rounded-lg pt-12 pb-12 pl-14 pr-14 bg-white"
-                            >
-                                <h1 style={{ color: '#3f4350' }} className="m-0 mb-2">
-                                    Đăng nhập
-                                </h1>
-                                <Form
-                                    name="basic"
-                                    layout="vertical"
-                                    initialValues={{
-                                        remember: true,
-                                    }}
-                                    onFinish={onFinish}
-                                    autoComplete="off"
-                                >
-                                    <Form.Item
-                                        label="Tài khoản"
-                                        name="username"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Vui lòng nhập vào tài khoản!',
-                                            },
-                                        ]}
-                                        initialValue={user && user.userName}
-                                    >
-                                        <Input size="large" />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Mật khẩu"
-                                        name="password"
-                                        initialValue={user && user.password}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Vui lòng nhập vào mật khẩu!',
-                                            },
-                                        ]}
-                                    >
-                                        <Input.Password size="large" />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        name="remember"
-                                        valuePropName={user && 'checked'}
-                                        wrapperCol={{
-                                            offset: 0,
-                                            span: 24,
-                                        }}
-                                    >
-                                        <Checkbox>Nhớ mật khẩu</Checkbox>
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        wrapperCol={{
-                                            offset: 0,
-                                            span: 24,
-                                        }}
-                                    >
-                                        <Button
-                                            size="large"
-                                            className={`w-full ${
-                                                loading && 'opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
-                                            }`}
-                                            type="primary"
-                                            htmlType="submit"
-                                        >
-                                            <Spin
-                                                indicator={<LoadingOutlined style={{ fontSize: 24 }} />}
-                                                spinning={loading}
-                                            />
-                                            <span className="ml-2"> Đăng nhập</span>
-                                        </Button>
-                                    </Form.Item>
-                                </Form>
-                            </div>
-                        </Col>
+                        {openForm ? <SignIn setOpen={setOpenForm} /> : <SignUp setOpen={setOpenForm} />}
                     </Row>
                 </div>
             </div>

@@ -4,6 +4,8 @@ import { FC, useEffect, useState } from 'react';
 import { PropsDataTopCustomer, PropsTopCustomerColumn, PropsTopCustomerLine } from '~/interfaces';
 import { statisticalServices } from '~/services';
 import { useAuth } from '~/hooks';
+import Head from '~/components/Head';
+import { configTitle } from '~/configs';
 
 const Rank: FC = () => {
     useAuth();
@@ -56,17 +58,21 @@ const Rank: FC = () => {
         ],
     };
     return (
-        <div
-            className="site-layout-background sm:p-[24px] pl-[8px] pr-[8px]"
-            style={{
-                minHeight: 360,
-            }}
-        >
-            <Spin spinning={loading} tip="Loading...">
-                <DualAxes {...config} />
-                <h5 className="text-center mt-2">Top 10 người dùng học nhiều từ vựng và chính xác cao.</h5>
-            </Spin>
-        </div>
+        <>
+            <Head title={configTitle.rank} />
+
+            <div
+                className="site-layout-background sm:p-[24px] pl-[8px] pr-[8px]"
+                style={{
+                    minHeight: 360,
+                }}
+            >
+                <Spin spinning={loading} tip="Loading...">
+                    <DualAxes {...config} />
+                    <h5 className="text-center mt-2">Top 10 người dùng học nhiều từ vựng và chính xác cao.</h5>
+                </Spin>
+            </div>
+        </>
     );
 };
 

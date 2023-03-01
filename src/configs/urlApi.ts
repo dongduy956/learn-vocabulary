@@ -40,10 +40,16 @@ const urlApi = {
     login: `${tables.auth}/Login`,
     logout: `${tables.auth}/Logout`,
     refreshToken: `${tables.auth}/RefreshToken`,
+    changePassword: `${tables.auth}/ChangePassword`,
+    sendCode: `${tables.auth}/SendCode`,
+    confirmCode: `${tables.auth}/ConfirmCode`,
+    forgetPassword: `${tables.auth}/ForgetPassword`,
     //account
     registerAccount: `${tables.account}/Register`,
     //user
     registerUser: `${tables.user}/Register`,
+    updateUser: `${tables.user}/Update`,
+    deleteUser: `${tables.user}/Delete`,
     //upload
     uploadImage: `${tables.upload}/UploadImage`,
 };

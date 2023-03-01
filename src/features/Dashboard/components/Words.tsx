@@ -17,8 +17,6 @@ import {
 import { ColumnsType } from 'antd/es/table';
 import { ChangeEvent, FC, useEffect, useState, lazy } from 'react';
 import { useSelector } from 'react-redux';
-import Head from '~/components/Head';
-import { configTitle } from '~/configs';
 import { pageSizeOptions, typeImportExcel } from '~/constraints';
 import { arrayLibrary } from '~/helpers';
 import {
@@ -344,7 +342,6 @@ const Words = () => {
     };
     return (
         <>
-            <Head title={`${configTitle.dashboard}`} />
             <FormImportWord
                 setTable={handleSetData}
                 open={openImportWord}

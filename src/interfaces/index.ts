@@ -27,4 +27,7 @@ export type { default as PropsAccount } from './PropsAccount';
 export type { default as PropsUser } from './PropsUser';
 export type { default as PropsLogin } from './PropsLogin';
 export type { default as PropsJwtRequest } from './PropsJwtRequest';
+export type { default as PropsChangeForgetPassword } from './PropsChangeForgetPassword';
+export type { default as PropsChangePassword } from './PropsChangePassword';
+export type { default as PropsAuth } from './PropsAuth';
 export * as PropsRequest from './PropsRequest';
