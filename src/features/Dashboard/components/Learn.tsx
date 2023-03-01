@@ -8,6 +8,7 @@ import { addTopicSelector } from '~/store';
 import Submit from './Submit';
 import { decodeToken } from 'react-jwt';
 import { configStorage } from '~/configs';
+import Cookies from 'js-cookie';
 
 const { Title } = Typography;
 const Learn = () => {
