@@ -6,10 +6,14 @@ import { PropsDataLearn, PropsLearnedWord, PropsTopic, PropsWord, PropsWordLearn
 import { learnedWordServices, topicServices, wordServices } from '~/services';
 import { addTopicSelector } from '~/store';
 import Submit from './Submit';
+import { decodeToken } from 'react-jwt';
+import { configStorage } from '~/configs';
 
 const { Title } = Typography;
 const Learn = () => {
-    const accountId = 1;
+    const accountId = decodeToken<any>(
+        JSON.parse(Cookies.get(configStorage.login) as string).accessToken as string,
+    ).nameid;
     const refInput = useRef<InputRef>(null);
     const stateAddTopic = useSelector(addTopicSelector);
     const [form] = Form.useForm();
