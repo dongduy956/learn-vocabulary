@@ -44,6 +44,7 @@ const urlApi = {
     sendCode: `${tables.auth}/SendCode`,
     confirmCode: `${tables.auth}/ConfirmCode`,
     forgetPassword: `${tables.auth}/ForgetPassword`,
+    googleLogin: `${tables.auth}/GoogleLogin`,
     //account
     registerAccount: `${tables.account}/Register`,
     //user

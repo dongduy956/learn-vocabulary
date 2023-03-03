@@ -63,6 +63,7 @@ const SignUp: FC<PropsAuth> = ({ setOpen }) => {
                 userId: user.id as number,
                 username: params.username,
                 password: params.password,
+                social: 0,
             };
             const resultAccountInsert = await accountServices.registerAccount(account);
             if (resultAccountInsert.isSuccess) {
@@ -190,7 +191,8 @@ const SignUp: FC<PropsAuth> = ({ setOpen }) => {
                                     <Button
                                         size="large"
                                         className={`w-full ${
-                                            loading && 'opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
+                                            loading &&
+                                            'pointer-events-none opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
                                         }`}
                                         type="primary"
                                         htmlType="submit"
@@ -199,7 +201,7 @@ const SignUp: FC<PropsAuth> = ({ setOpen }) => {
                                             indicator={<LoadingOutlined style={{ fontSize: 24 }} />}
                                             spinning={loading}
                                         />
-                                        <span className="ml-2"> Đăng ký</span>
+                                        <span className="ml-2">{loading ? 'Đang đăng ký' : 'Đăng ký'}</span>
                                     </Button>
                                 </Form.Item>
                             </Col>

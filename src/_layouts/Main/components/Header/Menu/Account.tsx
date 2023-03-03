@@ -7,38 +7,43 @@ import { configStorage } from '~/configs';
 import { useLogout } from '~/hooks';
 import { PropsAccount, PropsJwtRequest } from '~/interfaces';
 import { authServices } from '~/services';
+import { googleLogout } from '@react-oauth/google';
 const keys = {
     info: 'account.info',
     changePass: 'account.changePass',
     logout: 'account.logout',
 };
-const items: MenuProps['items'] = [
-    {
-        label: 'Thông tin tài khoản',
-        key: keys.info,
-        icon: <UserOutlined />,
-    },
-    {
-        label: 'Đổi mật khẩu',
-        key: keys.changePass,
-        icon: <UserOutlined />,
-    },
-    {
-        label: 'Đăng xuất',
-        key: keys.logout,
-        icon: <UserOutlined />,
-    },
-];
+
 const Account: FC = () => {
     const user: PropsAccount | Object = Cookies.get(configStorage.login)
         ? JSON.parse(Cookies.get(configStorage.login) as string).user
         : {};
+    const items: MenuProps['items'] = [
+        // {
+        //     label: 'Thông tin tài khoản',
+        //     key: keys.info,
+        //     icon: <UserOutlined />,
+        // },
+        {
+            label: 'Đổi mật khẩu',
+            key: keys.changePass,
+            icon: <UserOutlined />,
+            disabled: (user as PropsAccount).social !== 0,
+        },
+        {
+            label: 'Đăng xuất',
+            key: keys.logout,
+            icon: <UserOutlined />,
+        },
+    ];
     const [openChangePassword, setOpenChangePassword] = useState<boolean>(false);
     const logout = useLogout();
+
     const handleLogout = async () => {
         const login: PropsJwtRequest = Cookies.get(configStorage.login)
             ? JSON.parse(Cookies.get(configStorage.login) as string)
             : {};
+        if ((user as PropsAccount).social !== 0) googleLogout();
         const result = await authServices.logout({
             accessToken: login.accessToken,
             refreshToken: login.refreshToken,

@@ -1,24 +1,16 @@
-import {
-    CheckCircleOutlined,
-    ClockCircleOutlined,
-    CloseCircleOutlined,
-    ExclamationCircleOutlined,
-    MinusCircleOutlined,
-    SyncOutlined,
-} from '@ant-design/icons';
+import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { Col, Form, Input, Pagination, Row, Table, TableProps, Tag } from 'antd';
 import { ColumnsType } from 'antd/es/table';
+import Cookies from 'js-cookie';
 import { ChangeEvent, useEffect, useState } from 'react';
+import { decodeToken } from 'react-jwt';
 import Head from '~/components/Head';
-import { configTitle, configStorage } from '~/configs';
+import { configStorage, configTitle } from '~/configs';
 import { filterLearnedWord, pageSizeOptions } from '~/constraints';
 import { arrayLibrary } from '~/helpers';
-import { useDebounce } from '~/hooks';
+import { useAuth, useDebounce } from '~/hooks';
 import { ParamsSettable, PropsLearnedWord, PropsPagination } from '~/interfaces';
 import { learnedWordServices } from '~/services';
-import { useAuth } from '~/hooks';
-import { decodeToken } from 'react-jwt';
-import Cookies from 'js-cookie';
 const LearnedWord = () => {
     useAuth();
 
@@ -44,22 +36,21 @@ const LearnedWord = () => {
         {
             title: 'Tiếng anh',
             editable: true,
-            dataIndex: 'en',
+            dataIndex: 'wordModel.en',
             sorter: {
                 compare: (a: PropsLearnedWord, b: PropsLearnedWord) =>
                     a.wordModel && b.wordModel && a.wordModel.en > b.wordModel.en,
             },
             render: (_: any, record: PropsLearnedWord) => {
-                if (
-                    record.rand === 0 &&
-                    record.input.toLowerCase().trim() !== record.wordModel?.en.toLowerCase().trim()
-                ) {
-                    return (
-                        <>
-                            <Tag color="error">{record.input}</Tag>
-                            <Tag color="success">{record.wordModel?.en}</Tag>
-                        </>
-                    );
+                if (record.rand === 0) {
+                    if (record.correct) return <Tag color="success">{record.wordModel?.en}</Tag>;
+                    else
+                        return (
+                            <>
+                                <Tag color="error">{record.input}</Tag>
+                                <Tag color="success">{record.wordModel?.en}</Tag>
+                            </>
+                        );
                 } else return <Tag color="success">{record.wordModel?.en}</Tag>;
             },
         },
@@ -82,16 +73,15 @@ const LearnedWord = () => {
                     a.wordModel && b.wordModel && a.wordModel.vi > b.wordModel.vi,
             },
             render: (_: any, record: PropsLearnedWord) => {
-                if (
-                    record.rand === 1 &&
-                    record.input.toLowerCase().trim() !== record.wordModel?.vi.toLowerCase().trim()
-                ) {
-                    return (
-                        <>
-                            <Tag color="error">{record.input}</Tag>
-                            <Tag color="success">{record.wordModel?.vi}</Tag>
-                        </>
-                    );
+                if (record.rand === 1) {
+                    if (record.correct) return <Tag color="success">{record.wordModel?.vi}</Tag>;
+                    else
+                        return (
+                            <>
+                                <Tag color="error">{record.input}</Tag>
+                                <Tag color="success">{record.wordModel?.vi}</Tag>
+                            </>
+                        );
                 } else return <Tag color="success">{record.wordModel?.vi}</Tag>;
             },
         },

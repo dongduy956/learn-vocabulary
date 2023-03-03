@@ -9,7 +9,7 @@ import Submit from './Submit';
 import { decodeToken } from 'react-jwt';
 import { configStorage } from '~/configs';
 import Cookies from 'js-cookie';
-
+import { arrayLibrary } from '~/helpers';
 const { Title } = Typography;
 const Learn = () => {
     const accountId = decodeToken<any>(
@@ -44,6 +44,7 @@ const Learn = () => {
     }, [valueRadio]);
     const handleTopic = async (topicId: number) => {
         let resultWordsByTopic: Array<PropsWord> = [];
+        let newData: Array<PropsDataLearn> = [];
         setLoading(true);
         if (topicId > 0) {
             resultWordsByTopic = (await wordServices.getWordsByTopicId(topicId)).data;
@@ -52,15 +53,19 @@ const Learn = () => {
         } else if (topicId === 0) {
             const learnedWords: PropsLearnedWord[] = (await learnedWordServices.getAllIncorrectLearnedWords(accountId))
                 .data;
-            setWordsByTopics(learnedWords.map((item) => ({ ...(item.wordModel as PropsWord), rand: item.rand })));
+            newData = learnedWords.map((item) => ({
+                ...(item.wordModel as PropsWord),
+                rand: item.rand,
+            }));
         }
         setLoading(false);
-        if (topicId !== 0)
+        if (topicId !== 0) {
             if (valueRadio === 1)
-                setWordsByTopics(resultWordsByTopic.map((x) => ({ ...x, rand: numberLibrary.getRandInteger(0, 1) })));
-            else if (valueRadio === 2) setWordsByTopics(resultWordsByTopic.map((x) => ({ ...x, rand: 0 })));
-            else setWordsByTopics(resultWordsByTopic.map((x) => ({ ...x, rand: 1 })));
-
+                newData = resultWordsByTopic.map((x) => ({ ...x, rand: numberLibrary.getRandInteger(0, 1) }));
+            else if (valueRadio === 2) newData = resultWordsByTopic.map((x) => ({ ...x, rand: 0 }));
+            else newData = resultWordsByTopic.map((x) => ({ ...x, rand: 1 }));
+        }
+        setWordsByTopics(arrayLibrary.shuffleArray<PropsDataLearn>(newData));
         setLearnEmpty();
         setWordsLearn([]);
         setCheckLearned(false);
@@ -220,6 +225,31 @@ const Learn = () => {
                                             </Col>
                                         ) : (
                                             <Col span={11}>{wordsByTopic[index].vi}</Col>
+                                        )}
+                                        {wordsByTopic[index].rand === 0 && (
+                                            <Col span={24} className="flex">
+                                                {wordsByTopic
+                                                    .filter(
+                                                        (x) =>
+                                                            x.en !== wordsByTopic[index].en &&
+                                                            x.type === wordsByTopic[index].type &&
+                                                            x.vi
+                                                                .split(',')
+                                                                .some(
+                                                                    (e) =>
+                                                                        e &&
+                                                                        wordsByTopic[index].vi
+                                                                            .split(',')
+                                                                            .some((t) => t && t.trim() === e.trim()),
+                                                                ),
+                                                    )
+                                                    .map(
+                                                        (x, index, arrCur) =>
+                                                            `${index === 0 ? 'Các từ đồng nghĩa: ' : ''}${x.en} ${
+                                                                index < arrCur.length - 1 ? ' | ' : ''
+                                                            }`,
+                                                    )}
+                                            </Col>
                                         )}
                                     </Row>
                                 </Col>

@@ -119,21 +119,17 @@ const ChangePassword: FC<PropsChangeForgetPassword> = ({ open, setOpen }) => {
                                 </Form.Item>
                             </Col>
                             <Col span={24}>
-                                <Form.Item>
-                                    <Button
-                                        className={`ml-2 ${
-                                            loading && 'opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
-                                        }`}
-                                        type="primary"
-                                        htmlType="submit"
-                                    >
-                                        <Spin
-                                            indicator={<LoadingOutlined style={{ fontSize: 24 }} />}
-                                            spinning={loading}
-                                        />{' '}
-                                        <span className="ml-2">Đổi mật khẩu</span>
-                                    </Button>
-                                </Form.Item>
+                                <Button
+                                    className={`ml-2 ${
+                                        loading &&
+                                        'pointer-events-none opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
+                                    }`}
+                                    type="primary"
+                                    htmlType="submit"
+                                >
+                                    <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} spinning={loading} />{' '}
+                                    <span className="ml-2">{loading ? 'Đang thực hiện' : 'Đổi mật khẩu'}</span>
+                                </Button>
                             </Col>
                         </Row>
                     </Form>

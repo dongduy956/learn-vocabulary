@@ -183,6 +183,14 @@ const Words = () => {
                     : [],
             onFilter: (value: string, record: PropsWord) => record.topicName?.toLowerCase().trim() === value,
         },
+        {
+            title: 'Ghi chú',
+            editable: true,
+            dataIndex: 'note',
+            sorter: {
+                compare: (a: PropsWord, b: PropsWord) => a.note && b.note && a.note > b.note,
+            },
+        },
     ];
     const handleSetTopics = () => {
         (async () => {

@@ -6,4 +6,5 @@ export default interface PropsWord extends PropsBaseEntity {
     topicId: number;
     topicName?: string;
     type: string;
+    note?: string;
 }

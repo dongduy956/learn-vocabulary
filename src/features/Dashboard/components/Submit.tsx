@@ -69,7 +69,18 @@ const Submit: FC<PropsSubmit> = ({ wordsLearn }) => {
                 compare: (a: PropsWordLearn, b: PropsWordLearn) => a.vi > b.vi,
             },
             render: (_: any, record: PropsWordLearn) => {
-                if (record.rand === 1 && record.input.toLowerCase().trim() !== record.vi.toLowerCase().trim()) {
+                const vis = record.vi
+                    .split(',')
+                    .filter((x) => x && x)
+                    .map((x) => x.trim());
+                const inputs = record.input
+                    .toLowerCase()
+                    .trim()
+                    .split(',')
+                    .filter((x) => x && x)
+                    .map((x) => x.trim());
+                const check = vis.length === new Set([...vis, ...inputs]).size;
+                if (record.rand === 1 && !check) {
                     return (
                         <>
                             <Tag color="error">{record.input}</Tag>

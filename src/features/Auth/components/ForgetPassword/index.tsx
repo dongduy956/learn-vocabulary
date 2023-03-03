@@ -160,7 +160,7 @@ const ForgetPassword: FC<PropsChangeForgetPassword> = ({ open, setOpen }) => {
                                             <Button
                                                 className={`ml-2 ${
                                                     loading &&
-                                                    'opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
+                                                    'opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed pointer-events-none'
                                                 }`}
                                                 type="primary"
                                                 htmlType="submit"
@@ -169,7 +169,9 @@ const ForgetPassword: FC<PropsChangeForgetPassword> = ({ open, setOpen }) => {
                                                     indicator={<LoadingOutlined style={{ fontSize: 24 }} />}
                                                     spinning={loading}
                                                 />{' '}
-                                                <span className="ml-2">Đổi mật khẩu</span>
+                                                <span className="ml-2">
+                                                    {loading ? 'Đang thực hiện' : 'Đổi mật khẩu'}
+                                                </span>
                                             </Button>
                                         </Form.Item>
                                     </Col>
@@ -199,7 +201,7 @@ const ForgetPassword: FC<PropsChangeForgetPassword> = ({ open, setOpen }) => {
                                             <Button
                                                 className={`ml-2 ${
                                                     loading &&
-                                                    'opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
+                                                    'pointer-events-none opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
                                                 }`}
                                                 type="primary"
                                                 onClick={handleSendCodeAgain}
@@ -208,12 +210,12 @@ const ForgetPassword: FC<PropsChangeForgetPassword> = ({ open, setOpen }) => {
                                                     indicator={<LoadingOutlined style={{ fontSize: 24 }} />}
                                                     spinning={loading}
                                                 />{' '}
-                                                <span className="ml-2">Gửi lại</span>
+                                                <span className="ml-2">{loading ? 'Đang gửi' : 'Gửi lại'}</span>
                                             </Button>
                                             <Button
                                                 className={`ml-2 ${
                                                     loading &&
-                                                    'opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
+                                                    'pointer-events-none opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
                                                 }`}
                                                 type="primary"
                                                 htmlType="submit"
@@ -222,7 +224,7 @@ const ForgetPassword: FC<PropsChangeForgetPassword> = ({ open, setOpen }) => {
                                                     indicator={<LoadingOutlined style={{ fontSize: 24 }} />}
                                                     spinning={loading}
                                                 />{' '}
-                                                <span className="ml-2">Tiếp tục</span>
+                                                <span className="ml-2">{loading ? 'Đang kiểm tra' : 'Tiếp tục'}</span>
                                             </Button>
                                         </Form.Item>
                                     </Col>
@@ -252,22 +254,20 @@ const ForgetPassword: FC<PropsChangeForgetPassword> = ({ open, setOpen }) => {
                                     </Col>
 
                                     <Col span={24}>
-                                        <Form.Item>
-                                            <Button
-                                                className={`ml-2 ${
-                                                    loading &&
-                                                    'opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
-                                                }`}
-                                                type="primary"
-                                                htmlType="submit"
-                                            >
-                                                <Spin
-                                                    indicator={<LoadingOutlined style={{ fontSize: 24 }} />}
-                                                    spinning={loading}
-                                                />{' '}
-                                                <span className="ml-2">Xác nhận</span>
-                                            </Button>
-                                        </Form.Item>
+                                        <Button
+                                            className={`ml-2 ${
+                                                loading &&
+                                                'pointer-events-none opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
+                                            }`}
+                                            type="primary"
+                                            htmlType="submit"
+                                        >
+                                            <Spin
+                                                indicator={<LoadingOutlined style={{ fontSize: 24 }} />}
+                                                spinning={loading}
+                                            />{' '}
+                                            <span className="ml-2">{loading ? 'Đang kiểm tra' : 'Xác nhận'}</span>
+                                        </Button>
                                     </Col>
                                 </>
                             )}

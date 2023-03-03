@@ -7,4 +7,5 @@ export default interface PropsAccount extends PropsBaseEntity {
     fullName?: string;
     avatar?: string;
     code?: string;
+    social: number;
 }

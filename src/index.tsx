@@ -17,13 +17,13 @@ import { getAnalytics } from 'firebase/analytics';
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: 'AIzaSyBslNzxRfXXnQJslqKKPYsVa_d0yVWwt5E',
-    authDomain: 'trainvocabulary.firebaseapp.com',
-    projectId: 'trainvocabulary',
-    storageBucket: 'trainvocabulary.appspot.com',
-    messagingSenderId: '482353533739',
-    appId: '1:482353533739:web:410f9211a5386fb024ab6e',
-    measurementId: 'G-BCW7C70E0Q',
+    apiKey: 'AIzaSyC_Y1klBqPPQdChld8elZi6eXo8f1QgqKM',
+    authDomain: 'trainwordbook.firebaseapp.com',
+    projectId: 'trainwordbook',
+    storageBucket: 'trainwordbook.appspot.com',
+    messagingSenderId: '448958157982',
+    appId: '1:448958157982:web:434b0f63f618983763d78f',
+    measurementId: 'G-4ED0YMK2JX',
 };
 
 // Initialize Firebase
@@ -31,14 +31,13 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
-    // <React.StrictMode>
-
-    // </React.StrictMode>,
-    <Provider store={store}>
-        <GlobalStyles>
-            <App />
-        </GlobalStyles>
-    </Provider>,
+    <React.StrictMode>
+        <Provider store={store}>
+            <GlobalStyles>
+                <App />
+            </GlobalStyles>
+        </Provider>
+    </React.StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function

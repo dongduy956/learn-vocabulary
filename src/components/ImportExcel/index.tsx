@@ -217,11 +217,14 @@ const ImportExcel: FC<PropsImportExcel> = ({ title, type, open, setOpen, setTabl
                         <Button
                             onClick={handleSave}
                             type="primary"
-                            className={`${loading && 'cursor-not-allowed'}`}
+                            className={`${
+                                loading &&
+                                'pointer-events-none opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
+                            }`}
                             style={{ marginTop }}
                         >
                             <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} spinning={loading} />
-                            <span className="ml-2"> Xác nhận</span>
+                            <span className="ml-2">{loading ? 'Đang thêm dữ liệu' : 'Xác nhận'}</span>
                         </Button>
                     </Col>
                 </Row>

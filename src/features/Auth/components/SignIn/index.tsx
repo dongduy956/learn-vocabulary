@@ -9,7 +9,7 @@ import { PropsAuth } from '~/interfaces';
 import { authServices } from '~/services';
 import { SliceAuth } from '~/store/Slice';
 import ForgetPassword from '../ForgetPassword';
-
+import SignInGoogle from './SignInGoogle';
 const Login: FC<PropsAuth> = ({ setOpen }) => {
     const history = useNavigate();
     const [loading, setLoading] = useState<boolean>(false);
@@ -121,7 +121,8 @@ const Login: FC<PropsAuth> = ({ setOpen }) => {
                                     <Button
                                         size="large"
                                         className={`w-full ${
-                                            loading && 'opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
+                                            loading &&
+                                            'opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed pointer-events-none'
                                         }`}
                                         type="primary"
                                         htmlType="submit"
@@ -130,8 +131,18 @@ const Login: FC<PropsAuth> = ({ setOpen }) => {
                                             indicator={<LoadingOutlined style={{ fontSize: 24 }} />}
                                             spinning={loading}
                                         />
-                                        <span className="ml-2"> Đăng nhập</span>
+                                        <span className="ml-2">{!loading ? 'Đăng nhập' : 'Đang đăng nhập'}</span>
                                     </Button>
+                                </Form.Item>
+                            </Col>
+                            <Col span={24} className="flex justify-center">
+                                <Form.Item
+                                    wrapperCol={{
+                                        offset: 0,
+                                        span: 24,
+                                    }}
+                                >
+                                    <SignInGoogle />
                                 </Form.Item>
                             </Col>
                             <Col span={24} className="flex ">

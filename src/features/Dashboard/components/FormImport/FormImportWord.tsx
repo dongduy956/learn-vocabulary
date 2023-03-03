@@ -1,3 +1,4 @@
+import { LoadingOutlined } from '@ant-design/icons';
 import { Button, Col, Form, Input, Row, Select, Spin, notification } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { PropsFormImportWord, PropsTopic, PropsWord } from '~/interfaces';
@@ -169,11 +170,20 @@ const FormImportWord: FC<PropsFormImportWord> = ({ title, open, setOpen, setTabl
                                             </Form.Item>
                                         </Col>
                                         <Col span={24}>
-                                            <Form.Item>
-                                                <Button type="primary" htmlType="submit">
-                                                    Thêm
-                                                </Button>
-                                            </Form.Item>
+                                            <Button
+                                                className={`ml-2 ${
+                                                    loading &&
+                                                    'pointer-events-none opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
+                                                }`}
+                                                type="primary"
+                                                htmlType="submit"
+                                            >
+                                                <Spin
+                                                    indicator={<LoadingOutlined style={{ fontSize: 24 }} />}
+                                                    spinning={loading}
+                                                />{' '}
+                                                <span className="ml-2">{loading ? 'Đang thêm' : 'Thêm'}</span>
+                                            </Button>
                                         </Col>
                                     </Row>
                                 </Form>

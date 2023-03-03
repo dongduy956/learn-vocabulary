@@ -23,7 +23,7 @@ const Auth: FC = () => {
             >
                 <Row className="sm:pr-16 sm:pl-16 pr-4 pl-4 mb-4 mt-2">
                     <Col span={24}>
-                        <img className="w-[200px]" src={images.logo} alt="Logo VNVC" />
+                        <img className="w-[100px]" src={images.logo} alt="Logo VNVC" />
                     </Col>
                 </Row>
                 <div className="sm:mb-0 mb-2 sm:pr-16 sm:pl-16 pr-4 pl-4 grow">

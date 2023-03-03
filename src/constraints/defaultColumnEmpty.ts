@@ -1,1 +1,1 @@
-export const note = 'Ghi chú';
+export const note = 'Note';

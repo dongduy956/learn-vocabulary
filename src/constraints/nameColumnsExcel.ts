@@ -9,6 +9,7 @@ type Word = {
     vi: string;
     type: string;
     topicName: string;
+    note: string;
 };
 export const topic: Topic = {
     name: 'Name',
@@ -18,4 +19,5 @@ export const word: Word = {
     vi: 'Vi',
     type: 'Type',
     topicName: 'Topic',
+    note: 'Note',
 };

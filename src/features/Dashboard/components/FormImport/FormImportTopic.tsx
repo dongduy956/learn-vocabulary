@@ -1,3 +1,4 @@
+import { LoadingOutlined } from '@ant-design/icons';
 import { Button, Col, Form, Input, Row, Spin, notification } from 'antd';
 import { FC, useState } from 'react';
 import { PropsFormImportTopic, PropsTopic } from '~/interfaces';
@@ -60,7 +61,7 @@ const FormImportTopic: FC<PropsFormImportTopic> = ({ title, open, setOpen, setTa
                 <Row
                     gutter={[16, 16]}
                     style={{ marginLeft: 0, marginRight: 0 }}
-                    className="md:min-w-[700px] min-w-full p-4 pb-0 max-h-[500px] overflow-y-scroll overflow-x-hidden"
+                    className="md:min-w-[700px] min-w-full p-4 max-h-[500px] overflow-y-scroll overflow-x-hidden"
                 >
                     <Col span={24}>
                         <Spin spinning={loading} tip="Loading...">
@@ -94,13 +95,21 @@ const FormImportTopic: FC<PropsFormImportTopic> = ({ title, open, setOpen, setTa
                                                 <Input />
                                             </Form.Item>
                                         </Col>
-
                                         <Col span={24}>
-                                            <Form.Item>
-                                                <Button type="primary" htmlType="submit">
-                                                    Thêm
-                                                </Button>
-                                            </Form.Item>
+                                            <Button
+                                                className={`ml-2 ${
+                                                    loading &&
+                                                    'pointer-events-none opacity-8 bg-[#40a9ff] border-[#40a9ff] cursor-not-allowed'
+                                                }`}
+                                                type="primary"
+                                                htmlType="submit"
+                                            >
+                                                <Spin
+                                                    indicator={<LoadingOutlined style={{ fontSize: 24 }} />}
+                                                    spinning={loading}
+                                                />{' '}
+                                                <span className="ml-2">{loading ? 'Đang thêm' : 'Thêm'}</span>
+                                            </Button>
                                         </Col>
                                     </Row>
                                 </Form>
