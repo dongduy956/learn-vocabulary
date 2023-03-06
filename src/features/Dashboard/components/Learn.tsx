@@ -1,5 +1,21 @@
-import { Button, Col, Form, Input, InputRef, Row, Select, Spin, Typography, Radio, RadioChangeEvent } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import {
+    Button,
+    Col,
+    Form,
+    Input,
+    InputRef,
+    Row,
+    Select,
+    Spin,
+    Typography,
+    Radio,
+    RadioChangeEvent,
+    Checkbox,
+    message,
+} from 'antd';
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { numberLibrary } from '~/helpers';
 import { PropsDataLearn, PropsLearnedWord, PropsTopic, PropsWord, PropsWordLearn } from '~/interfaces';
@@ -10,6 +26,7 @@ import { decodeToken } from 'react-jwt';
 import { configStorage } from '~/configs';
 import Cookies from 'js-cookie';
 import { arrayLibrary } from '~/helpers';
+import { useDebounce } from '~/hooks';
 const { Title } = Typography;
 const Learn = () => {
     const accountId = decodeToken<any>(
@@ -23,9 +40,16 @@ const Learn = () => {
     const [index, setIndex] = useState<number>(0);
     const [input, setInput] = useState<string>('');
     const [topics, setTopics] = useState<Array<PropsTopic>>([]);
-    const [wordsByTopic, setWordsByTopics] = useState<Array<PropsDataLearn>>([]);
+    const [wordsByTopic, setWordsByTopic] = useState<Array<PropsDataLearn>>([]);
+    const [wordsByTopicOrigin, setWordsByTopicOrigin] = useState<Array<PropsDataLearn>>([]);
     const [wordsLearn, setWordsLearn] = useState<Array<PropsWordLearn>>([]);
     const [checkLearned, setCheckLearned] = useState<boolean>(false);
+    const [checkQuantityWord, setCheckQuantityWord] = useState<boolean>(false);
+    const [quantityStart, setQuantityStart] = useState<number>(0);
+    const [quantityEnd, setQuantityEnd] = useState<number>(0);
+    const [totalWords, setTotalWord] = useState<number>(0);
+    const debounceStart = Number(useDebounce(quantityStart.toString(), 500));
+    const debounceEnd = Number(useDebounce(quantityEnd.toString(), 500));
     useEffect(() => {
         (async () => {
             setLoading(true);
@@ -37,12 +61,10 @@ const Learn = () => {
     const onChange = (e: RadioChangeEvent) => {
         setValueRadio(e.target.value);
     };
-    useEffect(() => {
-        (async () => {
-            await handleTopic(form.getFieldValue('topicId'));
-        })();
-    }, [valueRadio]);
     const handleTopic = async (topicId: number) => {
+        setCheckQuantityWord(false);
+        setQuantityStart(0);
+        setQuantityEnd(0);
         let resultWordsByTopic: Array<PropsWord> = [];
         let newData: Array<PropsDataLearn> = [];
         setLoading(true);
@@ -60,19 +82,35 @@ const Learn = () => {
         }
         setLoading(false);
         if (topicId !== 0) {
-            if (valueRadio === 1)
+            if (valueRadio === 1) {
                 newData = resultWordsByTopic.map((x) => ({ ...x, rand: numberLibrary.getRandInteger(0, 1) }));
-            else if (valueRadio === 2) newData = resultWordsByTopic.map((x) => ({ ...x, rand: 0 }));
+            } else if (valueRadio === 2) newData = resultWordsByTopic.map((x) => ({ ...x, rand: 0 }));
             else newData = resultWordsByTopic.map((x) => ({ ...x, rand: 1 }));
         }
-        setWordsByTopics(arrayLibrary.shuffleArray<PropsDataLearn>(newData));
+        setWordsByTopicOrigin(newData);
+        setWordsByTopic(arrayLibrary.shuffleArray<PropsDataLearn>(newData));
         setLearnEmpty();
         setWordsLearn([]);
+        setTotalWord(newData.length);
         setCheckLearned(false);
     };
     useEffect(() => {
         refInput.current?.focus();
-    }, [wordsByTopic]);
+    }, [wordsByTopic, index]);
+    useEffect(() => {
+        if (checkQuantityWord && debounceEnd && debounceStart) {
+            if (debounceEnd > totalWords) message.warning('Kết thúc không lớn hơn tổng số từ vựng.');
+            else if (debounceStart > debounceEnd) message.warning('Bắt đầu phải nhỏ hơn hoặc bằng kết thúc.');
+            else {
+                let newData = wordsByTopicOrigin.filter((_, i) => i >= debounceStart - 1 && i <= debounceEnd - 1);
+                if (valueRadio === 1) {
+                    newData = newData.map((x) => ({ ...x, rand: numberLibrary.getRandInteger(0, 1) }));
+                } else if (valueRadio === 2) newData = newData.map((x) => ({ ...x, rand: 0 }));
+                else newData = newData.map((x) => ({ ...x, rand: 1 }));
+                setWordsByTopic(arrayLibrary.shuffleArray(newData));
+            }
+        }
+    }, [debounceStart, debounceEnd, valueRadio]);
     const setLearnEmpty = (): void => {
         setInput('');
         setIndex(0);
@@ -94,7 +132,11 @@ const Learn = () => {
             } else {
                 setLearnEmpty();
                 form.setFieldValue('topicId', -2);
-                setWordsByTopics([]);
+                setTotalWord(0);
+                setCheckQuantityWord(false);
+                setQuantityStart(0);
+                setQuantityEnd(0);
+                setWordsByTopic([]);
                 setCheckLearned(true);
                 setLoading(true);
                 const learnedWords: PropsLearnedWord[] = (await learnedWordServices.getAllLearnedWords(accountId)).data;
@@ -118,6 +160,15 @@ const Learn = () => {
         else setIndex((pre) => pre - 1);
         refInput.current?.focus();
         setInput('');
+    };
+    const handleCheckQuantity = async (e: CheckboxChangeEvent) => {
+        setCheckQuantityWord(e.target.checked);
+    };
+    const handleQuantityStart = async (e: ChangeEvent<HTMLInputElement>) => {
+        setQuantityStart(e.target.value ? Number(e.target.value) : 0);
+    };
+    const handleQuantityEnd = async (e: ChangeEvent<HTMLInputElement>) => {
+        setQuantityEnd(e.target.value ? Number(e.target.value) : 0);
     };
 
     return (
@@ -174,6 +225,39 @@ const Learn = () => {
                                     </Radio.Group>
                                 </Form.Item>
                             </Col>
+                            <Col span={24} className="mb-2">
+                                <Row gutter={[16, 16]} className="items-baseline">
+                                    <Col span={24}>
+                                        <Checkbox checked={checkQuantityWord} onChange={handleCheckQuantity}>
+                                            Số lượng từ vựng
+                                        </Checkbox>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Input
+                                            type="number"
+                                            min={1}
+                                            value={quantityStart ? quantityStart : ''}
+                                            onChange={handleQuantityStart}
+                                            disabled={!checkQuantityWord}
+                                            placeholder="Bắt đầu"
+                                        />
+                                    </Col>
+                                    <Col span={12}>
+                                        <Input
+                                            type="number"
+                                            value={quantityEnd ? quantityEnd : ''}
+                                            min={quantityStart + 1}
+                                            max={totalWords}
+                                            onChange={handleQuantityEnd}
+                                            disabled={!checkQuantityWord}
+                                            placeholder="Kết thúc"
+                                        />
+                                    </Col>
+                                    <Col span={24} className="ml-2 text-end">
+                                        <Typography>(Tổng {totalWords} từ vựng)</Typography>
+                                    </Col>
+                                </Row>
+                            </Col>
                         </Row>
                     </Form>
                     <Row>
@@ -182,7 +266,7 @@ const Learn = () => {
                                 <Col span={24}>
                                     <Row className="flex justify-center items-center mb-2">
                                         {wordsByTopic[index].rand === 0 ? (
-                                            <Col span={11}>
+                                            <Col span={10}>
                                                 <Input
                                                     ref={refInput}
                                                     value={input}
@@ -200,13 +284,13 @@ const Learn = () => {
                                                 />
                                             </Col>
                                         ) : (
-                                            <Col span={11}>{wordsByTopic[index].en}</Col>
+                                            <Col span={10}>{wordsByTopic[index].en}</Col>
                                         )}
-                                        <Col span={2} className="flex justify-center">
+                                        <Col span={4} className="flex justify-center">
                                             {`(${wordsByTopic[index].type})`} :
                                         </Col>
                                         {wordsByTopic[index].rand === 1 ? (
-                                            <Col span={11}>
+                                            <Col span={10}>
                                                 <Input
                                                     ref={refInput}
                                                     value={input}
@@ -224,7 +308,7 @@ const Learn = () => {
                                                 />
                                             </Col>
                                         ) : (
-                                            <Col span={11}>{wordsByTopic[index].vi}</Col>
+                                            <Col span={10}>{wordsByTopic[index].vi}</Col>
                                         )}
                                         {wordsByTopic[index].rand === 0 && (
                                             <Col span={24} className="flex">

@@ -53,7 +53,6 @@ const SignInGoogle = () => {
                 useOneTap
                 theme="outline"
             />
-            ;
         </GoogleOAuthProvider>
     );
 };

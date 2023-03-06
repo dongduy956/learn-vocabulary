@@ -6,9 +6,10 @@ export const isGrow = <T extends Array<any>>(arr: T): boolean => {
     return true;
 };
 export const shuffleArray = <T>(array: Array<T>) => {
-    for (let i = array.length - 1; i > 0; i--) {
+    const temp = [...array];
+    for (let i = temp.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        [temp[i], temp[j]] = [temp[j], temp[i]];
     }
-    return array;
+    return temp;
 };

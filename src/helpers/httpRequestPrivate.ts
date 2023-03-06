@@ -32,7 +32,6 @@ axios.interceptors.response.use(
                 accessToken: session?.accessToken,
                 refreshToken: session?.refreshToken,
             });
-            console.log(result);
             if (result.isSuccess) {
                 Cookies.set(configStorage.login, JSON.stringify(result.data), { expires: result.data.expiredTime });
                 config.headers = {

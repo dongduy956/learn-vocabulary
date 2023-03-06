@@ -18,7 +18,7 @@ import { getAnalytics } from 'firebase/analytics';
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
     apiKey: 'AIzaSyC_Y1klBqPPQdChld8elZi6eXo8f1QgqKM',
-    authDomain: 'trainwordbook.firebaseapp.com',
+    authDomain: 'trainwordbook.web.app',
     projectId: 'trainwordbook',
     storageBucket: 'trainwordbook.appspot.com',
     messagingSenderId: '448958157982',
