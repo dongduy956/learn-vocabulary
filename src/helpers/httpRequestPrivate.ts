@@ -42,7 +42,7 @@ axios.interceptors.response.use(
                         ...config.headers,
                         authorization: `Bearer ${result.data.accessToken}`,
                     };
-                } else if (result.statusCode === 404) Cookies.remove(configStorage.login);
+                } else if (result.statusCode === 404 || result.statusCode === 400) Cookies.remove(configStorage.login);
             } finally {
                 release();
             }
