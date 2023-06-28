@@ -98,19 +98,29 @@ const Learn = () => {
         refInput.current?.focus();
     }, [wordsByTopic, index]);
     useEffect(() => {
-        if (checkQuantityWord && debounceEnd && debounceStart) {
-            if (debounceEnd > totalWords) message.warning('Kết thúc không lớn hơn tổng số từ vựng.');
-            else if (debounceStart > debounceEnd) message.warning('Bắt đầu phải nhỏ hơn hoặc bằng kết thúc.');
-            else {
-                let newData = wordsByTopicOrigin.filter((_, i) => i >= debounceStart - 1 && i <= debounceEnd - 1);
-                if (valueRadio === 1) {
-                    newData = newData.map((x) => ({ ...x, rand: numberLibrary.getRandInteger(0, 1) }));
-                } else if (valueRadio === 2) newData = newData.map((x) => ({ ...x, rand: 0 }));
-                else newData = newData.map((x) => ({ ...x, rand: 1 }));
-                setWordsByTopic(arrayLibrary.shuffleArray(newData));
+        if (checkQuantityWord) {
+            if (debounceEnd && debounceStart) {
+                if (debounceEnd > wordsByTopicOrigin.length) message.warning('Kết thúc không lớn hơn tổng số từ vựng.');
+                else if (debounceStart > debounceEnd) message.warning('Bắt đầu phải nhỏ hơn hoặc bằng kết thúc.');
+                else {
+                    setIndex(0);
+                    let newData = wordsByTopicOrigin.filter((_, i) => i >= debounceStart - 1 && i <= debounceEnd - 1);
+                    setWordsByRadio(newData);
+                }
             }
+        } else {
+            setWordsByRadio(wordsByTopicOrigin);
         }
     }, [debounceStart, debounceEnd, valueRadio]);
+    const setWordsByRadio = (newData: Array<PropsDataLearn>): void => {
+        setInput('');
+        if (valueRadio === 1) {
+            newData = newData.map((x) => ({ ...x, rand: numberLibrary.getRandInteger(0, 1) }));
+        } else if (valueRadio === 2) newData = newData.map((x) => ({ ...x, rand: 0 }));
+        else newData = newData.map((x) => ({ ...x, rand: 1 }));
+        setTotalWord(newData.length);
+        setWordsByTopic(arrayLibrary.shuffleArray(newData));
+    };
     const setLearnEmpty = (): void => {
         setInput('');
         setIndex(0);
@@ -137,6 +147,7 @@ const Learn = () => {
                 setQuantityStart(0);
                 setQuantityEnd(0);
                 setWordsByTopic([]);
+                setWordsByTopicOrigin([]);
                 setCheckLearned(true);
                 setLoading(true);
                 const learnedWords: PropsLearnedWord[] = (await learnedWordServices.getAllLearnedWords(accountId)).data;
@@ -253,9 +264,20 @@ const Learn = () => {
                                             placeholder="Kết thúc"
                                         />
                                     </Col>
-                                    <Col span={24} className="ml-2 text-end">
-                                        <Typography>(Tổng {totalWords} từ vựng)</Typography>
-                                    </Col>
+                                    {totalWords ? (
+                                        <>
+                                            <Col span={12}>
+                                                <Typography className="text-red-600">
+                                                    {index + 1}/{totalWords}
+                                                </Typography>
+                                            </Col>
+                                            <Col span={12} className="text-end">
+                                                <Typography>(Tổng {totalWords} từ vựng)</Typography>
+                                            </Col>
+                                        </>
+                                    ) : (
+                                        ''
+                                    )}
                                 </Row>
                             </Col>
                         </Row>
